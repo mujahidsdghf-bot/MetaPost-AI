@@ -3,14 +3,13 @@ from pydantic import BaseModel
 import hashlib
 import requests
 
-app = FastAPI(title="AI Affiliate & Auto-Marketing Full Platform", version="3.0")
+app = FastAPI(title="MetaPost AI Advanced API", version="4.0")
 
 # మాక్ డేటాబేస్
 users_db = {"admin": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 184, "earnings": 75.20, "conversions": 12}
+analytics_data = {"clicks": 245, "earnings": 98.50, "conversions": 15}
 
-# Meta & WhatsApp API Credentials (మీ ఒరిజినల్ టోకెన్స్ ఇక్కడ ఇవ్వాలి)
 ACCESS_TOKEN = "YOUR_META_PERMANENT_ACCESS_TOKEN"
 INSTAGRAM_ACCOUNT_ID = "YOUR_IG_USER_ID"
 WHATSAPP_PHONE_NUMBER_ID = "YOUR_WHATSAPP_PHONE_NUMBER_ID"
@@ -42,8 +41,7 @@ class AutoPublishRequest(BaseModel):
 def signup(user: UserRegister):
     if user.username in users_db:
         raise HTTPException(status_code=400, detail="యూజర్ పేరు ఇప్పటికే ఉంది.")
-    hashed_pass = hashlib.sha256(user.password.encode()).hexdigest()
-    users_db[user.username] = hashed_pass
+    users_db[user.username] = hashlib.sha256(user.password.encode()).hexdigest()
     return {"message": "ఖాతా విజయవంతంగా సృష్టించబడింది!"}
 
 @app.post("/login")
@@ -58,15 +56,14 @@ def generate_content(data: CampaignRequest):
     results = {}
     
     if "సోషల్ మీడియా యాడ్ క్యాప్షన్" in data.content_type:
-        results['caption'] = f"""🔥 **స్పెషల్ ఆఫర్! మిస్ కాకండి!** 🔥\nమీ రోజువారీ అవసరాల కోసం సరికొత్త **{data.product_name}** వచ్చేసింది!\n{data.target_audience} కోసం పర్ఫెక్ట్ ఛాయిస్.\n👉 ఇక్కడ కొనండి: {data.affiliate_link}"""
+        results['caption'] = f"""🔥 **ప్రత్యేకమైన ఆఫర్ - మిస్ కాకండి!** 🔥\n\nమీ రోజువారీ అవసరాల కోసం సరికొత్త **{data.product_name}** వచ్చేసింది! 🎯\n{data.target_audience} కోసం ఇది బెస్ట్ ఛాయిస్.\n\n👉 ఇప్పుడే ఆర్డర్ చేయండి: {data.affiliate_link}\n\n#AffiliateMarketing #{data.category.replace(' & ', '')} #BestDeals"""
         
     if "ప్రొడక్ట్ డిస్క్రిప్షన్" in data.content_type:
-        results['description'] = f"**{data.product_name}** అనేది అత్యుత్తమ నాణ్యతతో తయారైన అద్భుతమైన ప్రొడక్ట్."
+        results['description'] = f"**{data.product_name}** అనేది మార్కెట్‌లో అత్యుత్తమ నాణ్యతతో లభిస్తున్న అద్భుతమైన ప్రొడక్ట్. ఇది యూజర్ల అవసరాలను పూర్తిగా తీరుస్తూ అత్యధిక ప్రయోజనాలను అందిస్తుంది."
         
     if "పూర్తి బ్లాగ్ ఆర్టికల్" in data.content_type:
-        results['blog'] = f"# {data.product_name} పూర్తి సమీక్ష\n\nప్రస్తుత మార్కెట్లో దీనికి విపరీతమైన డిమాండ్ ఉంది.\n[ఇక్కడ క్లిక్ చేసి ప్రొడక్ట్ చూడండి]({data.affiliate_link})"
+        results['blog'] = f"# {data.product_name}: సమగ్ర సమీక్ష మరియు కొనుగోలు గైడ్\n\nప్రస్తుత రోజుల్లో సరైన ప్రొడక్ట్‌ను ఎంచుకోవడం చాలా ముఖ్యం. ముఖ్యంగా **{data.target_audience}** కోసం రూపొందించబడిన **{data.product_name}** మార్కెట్‌లో ప్రత్యేక స్థానం సంపాదించుకుంది.\n\n## ప్రధాన ప్రయోజనాలు:\n- అత్యుత్తమ నాణ్యత మరియు మన్నిక\n- బడ్జెట్ ధరలో లభించడం\n- సులభమైన వాడకం\n\nమీరు కూడా దీనిని సొంతం చేసుకోవాలనుకుంటే క్రింది లింక్ ద్వారా పొందవచ్చు:\n[ఇక్కడ క్లిక్ చేసి ప్రొడక్ట్ చూడండి]({data.affiliate_link})"
 
-    # డేటాబేస్‌లో సేవ్ చేయడం
     campaign_entry = {
         "username": data.username,
         "product": data.product_name,
@@ -83,20 +80,18 @@ def auto_publish_content(data: AutoPublishRequest):
     results = {}
     full_message = f"{data.caption}\n\n👉 లింక్: {data.affiliate_link}"
     
-    # Instagram Auto-Posting
     if "Instagram" in data.target_platforms:
         try:
             container_url = f"https://graph.facebook.com/v18.0/{INSTAGRAM_ACCOUNT_ID}/media"
             payload = {"caption": full_message, "access_token": ACCESS_TOKEN}
             response = requests.post(container_url, data=payload)
             if response.status_code == 200:
-                results["Instagram"] = "విజయవంతంగా ఇన్‌స్టాగ్రామ్‌లో పోస్ట్ చేయబడింది!"
+                results["Instagram"] = "ఇన్‌స్టాగ్రామ్‌లో విజయవంతంగా పోస్ట్ చేయబడింది!"
             else:
                 results["Instagram"] = f"ఎర్రర్: {response.json()}"
         except Exception as e:
             results["Instagram"] = f"కనెక్షన్ విఫలమైంది: {str(e)}"
 
-    # WhatsApp Messaging
     if "WhatsApp" in data.target_platforms:
         try:
             whatsapp_url = f"https://graph.facebook.com/v18.0/{WHATSAPP_PHONE_NUMBER_ID}/messages"
@@ -109,7 +104,7 @@ def auto_publish_content(data: AutoPublishRequest):
             }
             wa_response = requests.post(whatsapp_url, json=wa_payload, headers=headers)
             if wa_response.status_code == 200:
-                results["WhatsApp"] = "వాట్సాప్ ద్వారా మెసేజ్ విజయవంతంగా పంపబడింది!"
+                results["WhatsApp"] = "వాట్సాప్ ద్వారా మెసేజ్ పంపబడింది!"
             else:
                 results["WhatsApp"] = f"వాట్సాప్ ఎర్రర్: {wa_response.json()}"
         except Exception as e:
