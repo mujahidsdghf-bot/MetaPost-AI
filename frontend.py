@@ -1,9 +1,7 @@
 import streamlit as st
 import requests
 
-# కొత్త లైన్ (మీ రెండర్ బ్యాక్‌ఎండ్ URL ఇక్కడ ఇవ్వాలి):
-BACKEND_URL = "https://metapost-backend.onrender.com"
-
+BACKEND_URL = "https://metapost-backend.onrender.com"  # మీ బ్యాక్‌ఎండ్ రెండర్ లింక్ ఇక్కడ ఇవ్వండి
 
 st.set_page_config(page_title="AI Affiliate & Auto-Marketing Platform", page_icon="🚀", layout="wide")
 
