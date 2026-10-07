@@ -1,7 +1,12 @@
 import streamlit as st
 import requests
 
-BACKEND_URL = "http://127.0.0.1:8000"
+# మార్చవలసిన పాత లైన్:
+# BACKEND_URL = "http://127.0.0.1:8000"
+
+# కొత్త లైన్ (మీ రెండర్ బ్యాక్‌ఎండ్ URL ఇక్కడ ఇవ్వాలి):
+BACKEND_URL = "https://metapost-backend.onrender.com"
+
 
 st.set_page_config(page_title="AI Affiliate & Auto-Marketing Platform", page_icon="🚀", layout="wide")
 
