@@ -3,12 +3,11 @@ from pydantic import BaseModel
 import hashlib
 import requests
 
-app = FastAPI(title="MetaPost AI Advanced API", version="4.0")
+app = FastAPI(title="MetaPost AI Pro API", version="5.0")
 
-# మాక్ డేటాబేస్
 users_db = {"admin": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 245, "earnings": 98.50, "conversions": 15}
+analytics_data = {"clicks": 312, "earnings": 145.80, "conversions": 22}
 
 ACCESS_TOKEN = "YOUR_META_PERMANENT_ACCESS_TOKEN"
 INSTAGRAM_ACCOUNT_ID = "YOUR_IG_USER_ID"
@@ -22,18 +21,18 @@ class UserLogin(BaseModel):
     username: str
     password: str
 
-class CampaignRequest(BaseModel):
+class ProCampaignRequest(BaseModel):
     username: str
-    product_name: str
-    category: str
+    mode: str  # "అఫిలియేట్ మార్కెటింగ్" లేదా "స్వంత బిజినెస్ ప్రమోషన్"
+    business_name: str
+    product_url: str
     target_audience: str
-    affiliate_link: str
-    content_type: list
+    content_types: list
 
 class AutoPublishRequest(BaseModel):
     product_name: str
     caption: str
-    affiliate_link: str
+    product_url: str
     target_platforms: list
     recipient_phone: str = None
 
@@ -51,25 +50,26 @@ def login(user: UserLogin):
         return {"message": "లాగిన్ విజయవంతమైంది!", "username": user.username}
     raise HTTPException(status_code=401, detail="తప్పు యూజర్ పేరు లేదా పాస్‌వర్డ్.")
 
-@app.post("/generate-content")
-def generate_content(data: CampaignRequest):
+@app.post("/generate-pro-content")
+def generate_pro_content(data: ProCampaignRequest):
     results = {}
     
-    if "సోషల్ మీడియా యాడ్ క్యాప్షన్" in data.content_type:
-        results['caption'] = f"""🔥 **ప్రత్యేకమైన ఆఫర్ - మిస్ కాకండి!** 🔥\n\nమీ రోజువారీ అవసరాల కోసం సరికొత్త **{data.product_name}** వచ్చేసింది! 🎯\n{data.target_audience} కోసం ఇది బెస్ట్ ఛాయిస్.\n\n👉 ఇప్పుడే ఆర్డర్ చేయండి: {data.affiliate_link}\n\n#AffiliateMarketing #{data.category.replace(' & ', '')} #BestDeals"""
-        
-    if "ప్రొడక్ట్ డిస్క్రిప్షన్" in data.content_type:
-        results['description'] = f"**{data.product_name}** అనేది మార్కెట్‌లో అత్యుత్తమ నాణ్యతతో లభిస్తున్న అద్భుతమైన ప్రొడక్ట్. ఇది యూజర్ల అవసరాలను పూర్తిగా తీరుస్తూ అత్యధిక ప్రయోజనాలను అందిస్తుంది."
-        
-    if "పూర్తి బ్లాగ్ ఆర్టికల్" in data.content_type:
-        results['blog'] = f"# {data.product_name}: సమగ్ర సమీక్ష మరియు కొనుగోలు గైడ్\n\nప్రస్తుత రోజుల్లో సరైన ప్రొడక్ట్‌ను ఎంచుకోవడం చాలా ముఖ్యం. ముఖ్యంగా **{data.target_audience}** కోసం రూపొందించబడిన **{data.product_name}** మార్కెట్‌లో ప్రత్యేక స్థానం సంపాదించుకుంది.\n\n## ప్రధాన ప్రయోజనాలు:\n- అత్యుత్తమ నాణ్యత మరియు మన్నిక\n- బడ్జెట్ ధరలో లభించడం\n- సులభమైన వాడకం\n\nమీరు కూడా దీనిని సొంతం చేసుకోవాలనుకుంటే క్రింది లింక్ ద్వారా పొందవచ్చు:\n[ఇక్కడ క్లిక్ చేసి ప్రొడక్ట్ చూడండి]({data.affiliate_link})"
+    # AI కంటెంట్ జనరేషన్ లాజిక్ based on URL & Mode
+    if "సోషల్ మీడియా యాడ్ క్యాప్షన్" in data.content_types:
+        results['caption'] = f"""🔥 **{data.business_name} స్పెషల్ లాంచ్ & ఆఫర్!** 🔥\n\nమీరు వెతుకుతున్న అద్భుతమైన ప్రొడక్ట్ ఇప్పుడు అందుబాటులో ఉంది! 🎯\n{data.target_audience} కోసం ఇది పర్ఫెక్ట్ ఛాయిస్.\n\n👉 వివరాలు చూసి ఇప్పుడే ఆర్డర్ చేయండి: {data.product_url}\n\n#BusinessGrowth #{data.business_name.replace(' ', '')} #TrendingDeals #Ad"""
+
+    if "రీల్స్ / వీడియో స్క్రిప్ట్ (Video Script)" in data.content_types:
+        results['video_script'] = f"""🎬 **Instagram / YouTube Video & Reel Script ({data.business_name})**\n\n- **Hook (మొదటి 3 సెకన్లు):** మీరు కూడా {data.target_audience} కావలసిన బెస్ట్ ప్రొడక్ట్ కోసం చూస్తున్నారా?\n- **Body (ప్రొడక్ట్ విశేషాలు):** {data.product_url} ద్వారా ఇప్పుడే ఈ అద్భుతమైన ప్రొడక్ట్‌ని తక్కువ ధరలో సొంతం చేసుకోండి. నాణ్యతలో ఎలాంటి రాజీ లేదు!\n- **Call to Action (చివరిలో):** వెంటనే కింద ఉన్న లింక్‌పై క్లిక్ చేసి మీ ఆర్డర్ ప్లేస్ చేయండి! లింక్ బయోలో ఉంది."""
+
+    if "వెబ్‌సైట్ బ్లాగ్ / ఆర్టికల్" in data.content_types:
+        results['blog'] = f"# {data.business_name} సమీక్ష: పూర్తి వివరాలు\n\nప్రస్తుత మార్కెట్‌లో సంచలనం సృష్టిస్తున్న ఈ ప్రొడక్ట్ గురించి పూర్తి వివరాలు తెలుసుకోండి. ముఖ్యంగా **{data.target_audience}** కోసం ఇది ఎంతగానో ఉపయోగపడుతుంది.\n\nమరిన్ని వివరాలకు అధికారిక వెబ్‌సైట్ చూడండి:\n[ఇక్కడ క్లిక్ చేయండి]({data.product_url})"
 
     campaign_entry = {
         "username": data.username,
-        "product": data.product_name,
-        "category": data.category,
-        "link": data.affiliate_link,
-        "content": results.get('caption', data.product_name)
+        "business": data.business_name,
+        "url": data.product_url,
+        "mode": data.mode,
+        "content": results.get('caption', data.business_name)
     }
     campaigns_db.append(campaign_entry)
     
@@ -78,7 +78,7 @@ def generate_content(data: CampaignRequest):
 @app.post("/auto-publish")
 def auto_publish_content(data: AutoPublishRequest):
     results = {}
-    full_message = f"{data.caption}\n\n👉 లింక్: {data.affiliate_link}"
+    full_message = f"{data.caption}\n\n👉 లింక్: {data.product_url}"
     
     if "Instagram" in data.target_platforms:
         try:
