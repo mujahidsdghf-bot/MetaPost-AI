@@ -1,13 +1,14 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel
 import hashlib
 import requests
+import urllib.parse
 
-app = FastAPI(title="MetaPost AI Pro API", version="5.0")
+app = FastAPI(title="MetaPost AI Ultimate Pro API", version="7.0")
 
 users_db = {"admin": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 312, "earnings": 145.80, "conversions": 22}
+analytics_data = {"clicks": 420, "earnings": 210.50, "conversions": 30}
 
 ACCESS_TOKEN = "YOUR_META_PERMANENT_ACCESS_TOKEN"
 INSTAGRAM_ACCOUNT_ID = "YOUR_IG_USER_ID"
@@ -21,18 +22,9 @@ class UserLogin(BaseModel):
     username: str
     password: str
 
-class ProCampaignRequest(BaseModel):
-    username: str
-    mode: str  # "అఫిలియేట్ మార్కెటింగ్" లేదా "స్వంత బిజినెస్ ప్రమోషన్"
-    business_name: str
-    product_url: str
-    target_audience: str
-    content_types: list
-
 class AutoPublishRequest(BaseModel):
-    product_name: str
+    business_name: str
     caption: str
-    product_url: str
     target_platforms: list
     recipient_phone: str = None
 
@@ -50,26 +42,35 @@ def login(user: UserLogin):
         return {"message": "లాగిన్ విజయవంతమైంది!", "username": user.username}
     raise HTTPException(status_code=401, detail="తప్పు యూజర్ పేరు లేదా పాస్‌వర్డ్.")
 
-@app.post("/generate-pro-content")
-def generate_pro_content(data: ProCampaignRequest):
+@app.post("/generate-media-content")
+async def generate_media_content(
+    username: str = Form(...),
+    mode: str = Form(...),
+    business_name: str = Form(...),
+    target_audience: str = Form(...),
+    product_url: str = Form(""),
+    image: UploadFile = File(None)
+):
     results = {}
     
-    # AI కంటెంట్ జనరేషన్ లాజిక్ based on URL & Mode
-    if "సోషల్ మీడియా యాడ్ క్యాప్షన్" in data.content_types:
-        results['caption'] = f"""🔥 **{data.business_name} స్పెషల్ లాంచ్ & ఆఫర్!** 🔥\n\nమీరు వెతుకుతున్న అద్భుతమైన ప్రొడక్ట్ ఇప్పుడు అందుబాటులో ఉంది! 🎯\n{data.target_audience} కోసం ఇది పర్ఫెక్ట్ ఛాయిస్.\n\n👉 వివరాలు చూసి ఇప్పుడే ఆర్డర్ చేయండి: {data.product_url}\n\n#BusinessGrowth #{data.business_name.replace(' ', '')} #TrendingDeals #Ad"""
+    # 1. AI క్యాప్షన్ జనరేషన్
+    results['caption'] = f"""🔥 **{business_name} స్పెషల్ ఆఫర్ & ప్రమోషన్!** 🔥\n\nమీరు కోరుకున్న అద్భుతమైన ప్రొడక్ట్ / సర్వీస్ ఇప్పుడు అందుబాటులో ఉంది! 🎯\n{target_audience} కోసం పర్ఫెక్ట్ ఛాయిస్.\n\n👉 ఇప్పుడే ఆర్డర్ చేయండి / సందర్శించండి: {product_url if product_url else 'మా ప్రొఫైల్ చెక్ చేయండి'}\n\n#{business_name.replace(' ', '')} #SpecialOffer #TrendingAds #BusinessGrowth"""
 
-    if "రీల్స్ / వీడియో స్క్రిప్ట్ (Video Script)" in data.content_types:
-        results['video_script'] = f"""🎬 **Instagram / YouTube Video & Reel Script ({data.business_name})**\n\n- **Hook (మొదటి 3 సెకన్లు):** మీరు కూడా {data.target_audience} కావలసిన బెస్ట్ ప్రొడక్ట్ కోసం చూస్తున్నారా?\n- **Body (ప్రొడక్ట్ విశేషాలు):** {data.product_url} ద్వారా ఇప్పుడే ఈ అద్భుతమైన ప్రొడక్ట్‌ని తక్కువ ధరలో సొంతం చేసుకోండి. నాణ్యతలో ఎలాంటి రాజీ లేదు!\n- **Call to Action (చివరిలో):** వెంటనే కింద ఉన్న లింక్‌పై క్లిక్ చేసి మీ ఆర్డర్ ప్లేస్ చేయండి! లింక్ బయోలో ఉంది."""
+    # 2. రీల్ / వీడియో స్క్రిప్ట్
+    results['video_script'] = f"""🎬 **Instagram & YouTube Reel Video Script ({business_name})**\n\n- **Hook (0-3s):** మీరు కూడా {target_audience} కోసం బెస్ట్ కోసం వెతుకుతున్నారా?\n- **Body:** ఇదిగో మీకోసం ప్రత్యేకంగా {business_name}! అద్భుతమైన నాణ్యత మరియు ప్రత్యేకమైన ఆఫర్లతో మీ ముందుకు వచ్చింది.\n- **Call to Action:** కింద ఉన్న లింక్‌పై క్లిక్ చేసి వెంటనే మీ ఆర్డర్ ప్లేస్ చేయండి!"""
 
-    if "వెబ్‌సైట్ బ్లాగ్ / ఆర్టికల్" in data.content_types:
-        results['blog'] = f"# {data.business_name} సమీక్ష: పూర్తి వివరాలు\n\nప్రస్తుత మార్కెట్‌లో సంచలనం సృష్టిస్తున్న ఈ ప్రొడక్ట్ గురించి పూర్తి వివరాలు తెలుసుకోండి. ముఖ్యంగా **{data.target_audience}** కోసం ఇది ఎంతగానో ఉపయోగపడుతుంది.\n\nమరిన్ని వివరాలకు అధికారిక వెబ్‌సైట్ చూడండి:\n[ఇక్కడ క్లిక్ చేయండి]({data.product_url})"
+    # 3. AI ఇమేజ్ / బ్యానర్ జనరేషన్ (Pollinations AI ద్వారా ప్రొడక్ట్ పేరు ఆధారంగా ఆటోమేటిక్ ఇమేజ్ లింక్ సృష్టించడం)
+    encoded_name = urllib.parse.quote(f"Professional commercial advertisement banner for {business_name}, high quality, vibrant colors")
+    ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_name}?width=1080&height=1080&nologo=true"
+    
+    results['ai_image_url'] = ai_image_url
+    results['upload_status'] = "యూజర్ ఫోటో అప్‌లోడ్ చేయబడింది 🖼️" if image else "AI ఆటోమేటిక్ బ్యానర్ జనరేట్ చేయబడింది ✨"
 
     campaign_entry = {
-        "username": data.username,
-        "business": data.business_name,
-        "url": data.product_url,
-        "mode": data.mode,
-        "content": results.get('caption', data.business_name)
+        "username": username,
+        "business": business_name,
+        "mode": mode,
+        "content": results['caption']
     }
     campaigns_db.append(campaign_entry)
     
@@ -78,7 +79,7 @@ def generate_pro_content(data: ProCampaignRequest):
 @app.post("/auto-publish")
 def auto_publish_content(data: AutoPublishRequest):
     results = {}
-    full_message = f"{data.caption}\n\n👉 లింక్: {data.product_url}"
+    full_message = data.caption
     
     if "Instagram" in data.target_platforms:
         try:
