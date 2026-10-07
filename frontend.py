@@ -40,11 +40,18 @@ if not st.session_state['logged_in']:
         s_user = st.text_input("కొత్త యూజర్ పేరు", key="s_user")
         s_pass = st.text_input("కొత్త పాస్‌వర్డ్", type="password", key="s_pass")
         if st.button("ఖాతా సృష్టించు"):
-            res = requests.post(f"{BACKEND_URL}/signup", json={"username": s_user, "password": s_pass})
-            if res.status_code == 200:
-                st.success("ఖాతా తయారైంది! ఇప్పుడు లాగిన్ అవ్వండి.")
-            else:
-                st.error(res.json().get("detail", "ఎర్రర్ వచ్చింది."))
+    try:
+        res = requests.post(f"{BACKEND_URL}/signup", json={"username": s_user, "password": s_pass})
+        if res.status_code == 200:
+            st.success("ఖాతా తయారైంది! ఇప్పుడు లాగిన్ అవ్వండి.")
+        else:
+            try:
+                err_msg = res.json().get("detail", "ఎర్రర్ వచ్చింది.")
+            except:
+                err_msg = f"సర్వర్ ఎర్రర్ (Status Code: {res.status_code})"
+            st.error(err_msg)
+    except Exception as e:
+        st.error(f"సర్వర్ కనెక్షన్ విఫలమైంది: {str(e)}")
 
 # మెయిన్ యాప్ (లాగిన్ అయ్యాక)
 else:
