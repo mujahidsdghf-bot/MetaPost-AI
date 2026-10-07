@@ -19,17 +19,22 @@ if not st.session_state['logged_in']:
         l_user = st.text_input("యూజర్ పేరు", key="l_user")
         l_pass = st.text_input("పాస్‌వర్డ్", type="password", key="l_pass")
         if st.button("లాగిన్ అవ్వండి"):
+    try:
+        res = requests.post(f"{BACKEND_URL}/login", json={"username": l_user, "password": l_pass})
+        if res.status_code == 200:
+            st.session_state['logged_in'] = True
+            st.session_state['username'] = l_user
+            st.success("లాగిన్ విజయవంతమైంది!")
+            st.rerun()
+        else:
+            # సేఫ్ గా ఎర్రర్ హ్యాండిల్ చేయడం
             try:
-                res = requests.post(f"{BACKEND_URL}/login", json={"username": l_user, "password": l_pass})
-                if res.status_code == 200:
-                    st.session_state['logged_in'] = True
-                    st.session_state['username'] = l_user
-                    st.success("లాగిన్ విజయవంతమైంది!")
-                    st.rerun()
-                else:
-                    st.error(res.json().get("detail", "లాగిన్ విఫలమైంది."))
+                err_msg = res.json().get("detail", "లాగిన్ విఫలమైంది.")
             except:
-                st.error("బ్యాక్-ఎండ్ సర్వర్ కనెక్ట్ కాలేదు!")
+                err_msg = f"సర్వర్ ఎర్రర్ (Status Code: {res.status_code})"
+            st.error(err_msg)
+    except Exception as e:
+        st.error(f"సర్వర్ కనెక్షన్ విఫలమైంది: {str(e)}")
                 
     with tab2:
         s_user = st.text_input("కొత్త యూజర్ పేరు", key="s_user")
