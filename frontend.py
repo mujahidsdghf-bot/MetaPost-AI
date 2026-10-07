@@ -1,9 +1,10 @@
 import streamlit as st
 import requests
 
-BACKEND_URL = "https://metapost-backend.onrender.com"  # మీ బ్యాక్‌ఎండ్ రెండర్ లింక్ ఇక్కడ ఇవ్వండి
+# మీ రెండర్ బ్యాక్‌ఎండ్ లింక్ ఇక్కడ ఇవ్వండి (చివర్లో '/' ఉండకూడదు)
+BACKEND_URL = "https://metapost-backend.onrender.com"
 
-st.set_page_config(page_title="AI Affiliate & Auto-Marketing Platform", page_icon="🚀", layout="wide")
+st.set_page_config(page_title="MetaPost AI - Marketing Platform", page_icon="🚀", layout="wide")
 
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
@@ -12,46 +13,45 @@ if 'username' not in st.session_state:
 
 # లాగిన్ / సైన్ అప్ పేజీ
 if not st.session_state['logged_in']:
-    st.title("🔐 AI మార్కెటింగ్ ప్లాట్‌ఫాం - లాగిన్ / సైన్ అప్")
+    st.title("🔐 MetaPost AI - లాగిన్ / సైన్ అప్")
     tab1, tab2 = st.tabs(["లాగిన్", "కొత్త ఖాతా"])
     
     with tab1:
         l_user = st.text_input("యూజర్ పేరు", key="l_user")
         l_pass = st.text_input("పాస్‌వర్డ్", type="password", key="l_pass")
         if st.button("లాగిన్ అవ్వండి"):
-    try:
-        res = requests.post(f"{BACKEND_URL}/login", json={"username": l_user, "password": l_pass})
-        if res.status_code == 200:
-            st.session_state['logged_in'] = True
-            st.session_state['username'] = l_user
-            st.success("లాగిన్ విజయవంతమైంది!")
-            st.rerun()
-        else:
-            # సేఫ్ గా ఎర్రర్ హ్యాండిల్ చేయడం
             try:
-                err_msg = res.json().get("detail", "లాగిన్ విఫలమైంది.")
-            except:
-                err_msg = f"సర్వర్ ఎర్రర్ (Status Code: {res.status_code})"
-            st.error(err_msg)
-    except Exception as e:
-        st.error(f"సర్వర్ కనెక్షన్ విఫలమైంది: {str(e)}")
+                res = requests.post(f"{BACKEND_URL}/login", json={"username": l_user, "password": l_pass})
+                if res.status_code == 200:
+                    st.session_state['logged_in'] = True
+                    st.session_state['username'] = l_user
+                    st.success("లాగిన్ విజయవంతమైంది!")
+                    st.rerun()
+                else:
+                    try:
+                        err_msg = res.json().get("detail", "లాగిన్ విఫలమైంది.")
+                    except:
+                        err_msg = f"సర్వర్ ఎర్రర్ (Status Code: {res.status_code})"
+                    st.error(err_msg)
+            except Exception as e:
+                st.error(f"సర్వర్ కనెక్షన్ విఫలమైంది: {str(e)}")
                 
     with tab2:
         s_user = st.text_input("కొత్త యూజర్ పేరు", key="s_user")
         s_pass = st.text_input("కొత్త పాస్‌వర్డ్", type="password", key="s_pass")
         if st.button("ఖాతా సృష్టించు"):
-    try:
-        res = requests.post(f"{BACKEND_URL}/signup", json={"username": s_user, "password": s_pass})
-        if res.status_code == 200:
-            st.success("ఖాతా తయారైంది! ఇప్పుడు లాగిన్ అవ్వండి.")
-        else:
             try:
-                err_msg = res.json().get("detail", "ఎర్రర్ వచ్చింది.")
-            except:
-                err_msg = f"సర్వర్ ఎర్రర్ (Status Code: {res.status_code})"
-            st.error(err_msg)
-    except Exception as e:
-        st.error(f"సర్వర్ కనెక్షన్ విఫలమైంది: {str(e)}")
+                res = requests.post(f"{BACKEND_URL}/signup", json={"username": s_user, "password": s_pass})
+                if res.status_code == 200:
+                    st.success("ఖాతా తయారైంది! ఇప్పుడు లాగిన్ అవ్వండి.")
+                else:
+                    try:
+                        err_msg = res.json().get("detail", "ఎర్రర్ వచ్చింది.")
+                    except:
+                        err_msg = f"సర్వర్ ఎర్రర్ (Status Code: {res.status_code})"
+                    st.error(err_msg)
+            except Exception as e:
+                st.error(f"సర్వర్ కనెక్షన్ విఫలమైంది: {str(e)}")
 
 # మెయిన్ యాప్ (లాగిన్ అయ్యాక)
 else:
@@ -95,17 +95,20 @@ else:
                     "affiliate_link": affiliate_link,
                     "content_type": content_type
                 }
-                res = requests.post(f"{BACKEND_URL}/generate-content", json=payload)
-                if res.status_code == 200:
-                    data = res.json()["generated_content"]
-                    st.success("కంటెంట్ విజయవంతంగా జనరేట్ అయి సేవ్ చేయబడింది!")
-                    for k, v in data.items():
-                        st.subheader(k.capitalize())
-                        st.write(v)
-                else:
-                    st.error("జెనరేషన్‌లో లోపం ఏర్పడింది.")
+                try:
+                    res = requests.post(f"{BACKEND_URL}/generate-content", json=payload)
+                    if res.status_code == 200:
+                        data = res.json()["generated_content"]
+                        st.success("కంటెంట్ విజయవంతంగా జనరేట్ అయి సేవ్ చేయబడింది!")
+                        for k, v in data.items():
+                            st.subheader(k.capitalize())
+                            st.write(v)
+                    else:
+                        st.error("జెనరేషన్‌లో లోపం ఏర్పడింది.")
+                except Exception as e:
+                    st.error(f"సర్వర్ కనెక్షన్ ఎర్రర్: {str(e)}")
             else:
-                    st.warning("దయచేసి ప్రొడక్ట్ పేరు ఎంటర్ చేయండి.")
+                st.warning("దయచేసి ప్రొడక్ట్ పేరు ఎంటర్ చేయండి.")
 
     elif menu == "ఆటో-పబ్లిషింగ్ (Meta & WhatsApp)":
         st.title("📡 సోషల్ మీడియా ఆటో-పబ్లిషింగ్ సెంటర్")
@@ -117,7 +120,7 @@ else:
             link = st.text_input("అఫిలియేట్ లింక్:")
             
             platforms = st.multiselect("ప్లాట్‌ఫామ్స్ ఎంచుకోండి:", ["Instagram", "WhatsApp"])
-            phone = st.text_input("వాట్సాప్ నంబర్ (WhatsApp కి పంపాలంటే ఇది నింపండి, ఉదా: +919876543210):")
+            phone = st.text_input("వాట్సాప్ నంబర్ (ఉదా: +919876543210):")
             
             pub_btn = st.form_submit_button("ఆటోమేటిక్‌గా పబ్లిష్ చేయి")
 
@@ -131,14 +134,17 @@ else:
                     "recipient_phone": phone
                 }
                 with st.spinner("సోషల్ మీడియా మరియు వాట్సాప్‌కి పోస్ట్ అవుతోంది..."):
-                    res = requests.post(f"{BACKEND_URL}/auto-publish", json=payload)
-                    if res.status_code == 200:
-                        res_data = res.json().get("publish_results", {})
-                        st.success("ప్రాసెస్ పూర్తయింది!")
-                        for plat, msg in res_data.items():
-                            st.info(f"**{plat}:** {msg}")
-                    else:
-                        st.error("ఆటో-పబ్లిషింగ్ విఫలమైంది.")
+                    try:
+                        res = requests.post(f"{BACKEND_URL}/auto-publish", json=payload)
+                        if res.status_code == 200:
+                            res_data = res.json().get("publish_results", {})
+                            st.success("ప్రాసెస్ పూర్తయింది!")
+                            for plat, msg in res_data.items():
+                                st.info(f"**{plat}:** {msg}")
+                        else:
+                            st.error("ఆటో-పబ్లిషింగ్ విఫలమైంది.")
+                    except Exception as e:
+                        st.error(f"కనెక్షన్ ఎర్రర్: {str(e)}")
             else:
                 st.warning("అన్ని వివరాలు సరిగ్గా నింపండి.")
 
@@ -154,19 +160,22 @@ else:
 
     elif menu == "డ్యాష్‌బోర్డ్ & ట్రాకింగ్":
         st.title("📊 డ్యాష్‌బోర్డ్ మరియు అనలిటిక్స్")
-        res = requests.get(f"{BACKEND_URL}/analytics/{st.session_state['username']}")
-        if res.status_code == 200:
-            data = res.json()
-            analytics = data["analytics"]
-            
-            c1, c2, c3 = st.columns(3)
-            c1.metric("మొత్తం క్లిక్స్", analytics["clicks"])
-            c2.metric("సఫలమైన సేల్స్", analytics["conversions"])
-            c3.metric("మొత్తం సంపాదన ($)", analytics["earnings"])
-            
-            st.subheader("📁 మీ సేవ్ చేసిన క్యాంపెయిన్స్")
-            for camp in data["campaigns"]:
-                st.write(f"- **ప్రొడక్ట్:** {camp['product']} | **లింక్:** {camp['link']}")
+        try:
+            res = requests.get(f"{BACKEND_URL}/analytics/{st.session_state['username']}")
+            if res.status_code == 200:
+                data = res.json()
+                analytics = data["analytics"]
+                
+                c1, c2, c3 = st.columns(3)
+                c1.metric("మొత్తం క్లిక్స్", analytics["clicks"])
+                c2.metric("సఫలమైన సేల్స్", analytics["conversions"])
+                c3.metric("మొత్తం సంపాదన ($)", analytics["earnings"])
+                
+                st.subheader("📁 మీ సేవ్ చేసిన క్యాంపెయిన్స్")
+                for camp in data["campaigns"]:
+                    st.write(f"- **ప్రొడక్ట్:** {camp['product']} | **లింక్:** {camp['link']}")
+        except:
+            st.error("అనలిటిక్స్ డేటా లోడ్ చేయడంలో విఫలమైంది.")
 
     elif menu == "SaaS సబ్‌స్క్రిప్షన్ ప్లాన్స్":
         st.title("💎 SaaS సబ్‌స్క్రిప్షన్ ప్లాన్స్")
