@@ -4,11 +4,12 @@ import hashlib
 import requests
 import urllib.parse
 
-app = FastAPI(title="MetaPost AI Ultimate Pro API", version="7.0")
+app = FastAPI(title="MetaPost AI Ultimate Pro API", version="8.0")
 
-users_db = {"admin": hashlib.sha256("admin123".encode()).hexdigest()}
+# గ్లోబల్ యూజర్స్ డిక్షనరీ (రిజిస్ట్రేషన్ ఎర్రర్స్ రాకుండా)
+users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 420, "earnings": 210.50, "conversions": 30}
+analytics_data = {"clicks": 540, "earnings": 285.00, "conversions": 42}
 
 ACCESS_TOKEN = "YOUR_META_PERMANENT_ACCESS_TOKEN"
 INSTAGRAM_ACCOUNT_ID = "YOUR_IG_USER_ID"
@@ -31,7 +32,7 @@ class AutoPublishRequest(BaseModel):
 @app.post("/signup")
 def signup(user: UserRegister):
     if user.username in users_db:
-        raise HTTPException(status_code=400, detail="యూజర్ పేరు ఇప్పటికే ఉంది.")
+        raise HTTPException(status_code=400, detail="ఈ యూజర్ పేరు / మెయిల్ ఐడి ఇప్పటికే రిజిస్టర్ చేయబడింది. దయచేసి లాగిన్ అవ్వండి.")
     users_db[user.username] = hashlib.sha256(user.password.encode()).hexdigest()
     return {"message": "ఖాతా విజయవంతంగా సృష్టించబడింది!"}
 
@@ -42,35 +43,31 @@ def login(user: UserLogin):
         return {"message": "లాగిన్ విజయవంతమైంది!", "username": user.username}
     raise HTTPException(status_code=401, detail="తప్పు యూజర్ పేరు లేదా పాస్‌వర్డ్.")
 
-@app.post("/generate-media-content")
-async def generate_media_content(
+@app.post("/generate-ai-video-content")
+async def generate_ai_video_content(
     username: str = Form(...),
-    mode: str = Form(...),
-    business_name: str = Form(...),
-    target_audience: str = Form(...),
-    product_url: str = Form(""),
-    image: UploadFile = File(None)
+    niche: str = Form(...),
+    topic: str = Form(...),
+    target_platform: str = Form(...)
 ):
     results = {}
     
-    # 1. AI క్యాప్షన్ జనరేషన్
-    results['caption'] = f"""🔥 **{business_name} స్పెషల్ ఆఫర్ & ప్రమోషన్!** 🔥\n\nమీరు కోరుకున్న అద్భుతమైన ప్రొడక్ట్ / సర్వీస్ ఇప్పుడు అందుబాటులో ఉంది! 🎯\n{target_audience} కోసం పర్ఫెక్ట్ ఛాయిస్.\n\n👉 ఇప్పుడే ఆర్డర్ చేయండి / సందర్శించండి: {product_url if product_url else 'మా ప్రొఫైల్ చెక్ చేయండి'}\n\n#{business_name.replace(' ', '')} #SpecialOffer #TrendingAds #BusinessGrowth"""
+    # 1. AI YouTube Shorts & Instagram Reels Video Script (మానిటైజేషన్ కోసం)
+    results['video_title'] = f"🔥 Viral {target_platform} Idea: {topic}"
+    results['video_script'] = f"""🎥 **{target_platform} AI Video Script & Production Guide**\n\n- **⏱️ Duration:** 30 - 50 Seconds (Optimized for High Retention & Subscribers)\n- **🎬 Scene 1 (0-5s Hook):** "మీరు కూడా {topic} గురించి ఈ రహస్యం తెలుసుకోవాలనుకుంటున్నారా? చివరి వరకు చూడండి!"\n- **🎬 Scene 2 (5-20s Core Value):** ప్రధాన సమాచారం / ప్రొడక్ట్ విశేషాలు ఇక్కడ వేగంగా వివరించండి. విజువల్స్ చాలా కలర్‌ఫుల్‌గా ఉండాలి.\n- **🎬 Scene 3 (20-30s Call to Action):** "ఇలాంటి మరిన్ని అద్భుతమైన వీడియోల కోసం వెంటనే మన ఛానెల్‌ని Subscribe చేయండి!"\n\n📌 **Suggested Audio/BGM:** Trending upbeat background music\n#Shorts #Reels #YouTubeMonetization #{topic.replace(' ', '')}"""
 
-    # 2. రీల్ / వీడియో స్క్రిప్ట్
-    results['video_script'] = f"""🎬 **Instagram & YouTube Reel Video Script ({business_name})**\n\n- **Hook (0-3s):** మీరు కూడా {target_audience} కోసం బెస్ట్ కోసం వెతుకుతున్నారా?\n- **Body:** ఇదిగో మీకోసం ప్రత్యేకంగా {business_name}! అద్భుతమైన నాణ్యత మరియు ప్రత్యేకమైన ఆఫర్లతో మీ ముందుకు వచ్చింది.\n- **Call to Action:** కింద ఉన్న లింక్‌పై క్లిక్ చేసి వెంటనే మీ ఆర్డర్ ప్లేస్ చేయండి!"""
-
-    # 3. AI ఇమేజ్ / బ్యానర్ జనరేషన్ (Pollinations AI ద్వారా ప్రొడక్ట్ పేరు ఆధారంగా ఆటోమేటిక్ ఇమేజ్ లింక్ సృష్టించడం)
-    encoded_name = urllib.parse.quote(f"Professional commercial advertisement banner for {business_name}, high quality, vibrant colors")
-    ai_image_url = f"https://image.pollinations.ai/prompt/{encoded_name}?width=1080&height=1080&nologo=true"
+    # 2. AI Video Thumbnail / Banner Generation
+    encoded_prompt = urllib.parse.quote(f"Eye-catching viral thumbnail background for {target_platform} about {topic}, ultra hd, 4k, cinematic lighting")
+    ai_thumbnail_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1280&height=720&nologo=true"
     
-    results['ai_image_url'] = ai_image_url
-    results['upload_status'] = "యూజర్ ఫోటో అప్‌లోడ్ చేయబడింది 🖼️" if image else "AI ఆటోమేటిక్ బ్యానర్ జనరేట్ చేయబడింది ✨"
+    results['ai_thumbnail_url'] = ai_thumbnail_url
 
     campaign_entry = {
         "username": username,
-        "business": business_name,
-        "mode": mode,
-        "content": results['caption']
+        "niche": niche,
+        "topic": topic,
+        "platform": target_platform,
+        "content": results['video_title']
     }
     campaigns_db.append(campaign_entry)
     
