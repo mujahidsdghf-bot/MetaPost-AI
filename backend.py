@@ -4,15 +4,17 @@ import hashlib
 import requests
 import urllib.parse
 import os
+import replicate
 
-app = FastAPI(title="MetaPost AI Professional Video API", version="21.0")
+app = FastAPI(title="MetaPost AI Professional Video API", version="22.0")
 
 users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 1800, "earnings": 1250.00, "conversions": 250}
+analytics_data = {"clicks": 1900, "earnings": 1350.00, "conversions": 270}
 
-# Replicate API Token (మీరు రెండర్ ఎన్విరాన్మెంట్ వేరియబుల్స్ లో దీనిని సెట్ చేసుకోవచ్చు)
+# రెండర్ / సర్వర్ ఎన్విరాన్మెంట్ నుండి టోకెన్ తీసుకోవడం
 REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN", "YOUR_REPLICATE_API_TOKEN")
+os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
 
 class UserRegister(BaseModel):
     username: str
@@ -58,31 +60,39 @@ async def generate_content(
     
     if option_type == "Affiliate Marketing":
         results['title'] = f"Exclusive AI Promo: {title_name} ({language} - {video_duration})"
-        results['content'] = f"🔥 Special AI Generated Offer! Get your {title_name} today.\n\n{description_text}\n\n👉 Claim Here: {link_url}\n\n#AI1Marketing #Exclusive #{language.replace(' ', '')}"
+        results['content'] = f"🔥 Special AI Generated Offer! Get your {title_name} today.\n\n{description_text}\n\n👉 Claim Here: {link_url}\n\n#AIMarketing #Exclusive"
     
     elif option_type == "Business & Auto Ads":
         results['title'] = f"Official AI Ad: {title_name} ({language} - {video_duration})"
-        results['content'] = f"🌟 Transform your brand with AI-powered promotion for {title_name}.\n\n{description_text}\n\n👉 Official Link: {link_url if link_url else 'Contact us'}\n\n#BusinessAds #AIGrowth #{language.replace(' ', '')}"
+        results['content'] = f"🌟 Transform your brand with AI-powered promotion for {title_name}.\n\n{description_text}\n\n👉 Official Link: {link_url if link_url else 'Contact us'}\n\n#BusinessAds #AIGrowth"
     
     elif option_type == "Social Media Videos":
         results['title'] = f"Cinematic AI Video ({video_duration}): {title_name} ({language})"
-        results['content'] = f"🎥 **Professional {video_duration} Cinematic AI Script**\n\n- **Visual Prompt:** Cinematic commercial render of {title_name}, 4k ultra-HD, professional lighting.\n- **Narration:** {description_text}\n- **CTA:** Subscribe for more AI-generated media!\n\n#AIVideo #Reels #Shorts"
+        results['content'] = f"🎥 **Professional {video_duration} Cinematic AI Script**\n\n- **Prompt:** Commercial render of {title_name}, 4k ultra-HD.\n- **Narration:** {description_text}\n- **CTA:** Subscribe for more media!"
 
-    # AI Banner generation prompt
-    clean_banner_prompt = urllib.parse.quote(f"Cinematic professional commercial advertisement for {title_name}, 8k resolution, photorealistic studio lighting, trending AI art")
+    clean_banner_prompt = urllib.parse.quote(f"Cinematic professional commercial advertisement for {title_name}, 8k resolution, photorealistic studio lighting")
     results['ai_image_url'] = f"https://image.pollinations.ai/prompt/{clean_banner_prompt}?width=1080&height=1350&nologo=true"
 
-    # AI Video Generation Logic (సరిగ్గా టాపిక్‌కి తగినట్లుగా హై-క్వాలిటీ వీడియో రెండరింగ్ లింక్)
-    t_lower = title_name.lower()
-    if "tailor" in t_lower or "blouse" in t_lower or "sewing" in t_lower or "fashion" in t_lower:
-        results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-tailor-working-with-a-sewing-machine-42999-large.mp4"
-        results['video_source'] = f"AI Cinematic Tailoring & Fashion Video for {title_name}"
-    elif "food" in t_lower or "hotel" in t_lower or "biryani" in t_lower or "restaurant" in t_lower:
-        results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-chef-cooking-in-a-kitchen-43285-large.mp4"
-        results['video_source'] = f"AI Cinematic Culinary & Restaurant Video for {title_name}"
-    else:
+    # Replicate API ద్వారా రియల్ టైమ్ వీడియో జనరేషన్ ప్రయత్నించడం
+    try:
+        # Stable Video Diffusion లేదా వీడియో మోడల్ రన్ చేయడం
+        output = replicate.run(
+            "stability-ai/stable-video-diffusion:3f0457e4619daac51203b8478d9a19c0b3ac055dae7c437b1d4bc213b97efa43",
+            input={
+                "input_image": results['ai_image_url'],
+                "video_length": "14_frames_with_svd",
+                "sizing_strategy": "maintain_aspect_ratio"
+            }
+        )
+        if output:
+            results['video_url'] = str(output)
+            results['video_source'] = f"Replicate AI Generated Video for {title_name}"
+        else:
+            raise Exception("Empty output")
+    except Exception as e:
+        # ఒకవేళ ఏపీఐ టోకెన్ లేకపోయినా లేదా ఎర్రర్ వచ్చినా ఫాల్‌బ్యాక్ హై-క్వాలిటీ వీడియో ఇవ్వడం
         results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-and-lights-31972-large.mp4"
-        results['video_source'] = f"AI Advanced Cinematic Commercial Video for {title_name}"
+        results['video_source'] = f"AI Commercial Video for {title_name} (Fallback)"
 
     campaign_entry = {
         "username": username,
