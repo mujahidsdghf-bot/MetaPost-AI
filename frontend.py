@@ -60,8 +60,6 @@ else:
     st.sidebar.markdown(f"**{st.session_state['username']}**")
     
     selected_lang = st.sidebar.selectbox("🌐 Select Output Language", ["English", "Telugu", "Hindi", "Spanish", "French", "Arabic"])
-    
-    # Video Duration Selector for AI Videos (2 min, 3 min, 5 min, 10 min)
     selected_duration = st.sidebar.selectbox("⏱️ Select AI Video Duration", ["2 Minutes", "3 Minutes", "5 Minutes", "10 Minutes"])
     
     menu = st.sidebar.selectbox("Main Dashboard Menu", [
@@ -105,9 +103,9 @@ else:
                         res_json = res.json()["generated_content"]
                         st.success("Affiliate Package Generated Successfully!")
                         
-                        st.subheader("🖼️ AI Generated Promotional Banner:")
+                        st.subheader(f"🖼️ AI Generated Banner for {t_name}:")
                         st.image(res_json["ai_image_url"], use_container_width=True)
-                        st.markdown(f"[📥 Download Banner Image]({res_json['ai_image_url']})")
+                        st.markdown(f"[📥 Download High-Res Banner]({res_json['ai_image_url']})")
                         
                         st.subheader(f"🎬 Generated {selected_duration} Promotional Video (Play & Download):")
                         st.video(res_json["video_url"])
@@ -157,9 +155,9 @@ else:
                         res_json = res.json()["generated_content"]
                         st.success("Business Ad Package Generated Successfully!")
                         
-                        st.subheader("🖼️ AI Generated Business Banner:")
+                        st.subheader(f"🖼️ AI Generated Business Banner for {b_name}:")
                         st.image(res_json["ai_image_url"], use_container_width=True)
-                        st.markdown(f"[📥 Download Ad Image]({res_json['ai_image_url']})")
+                        st.markdown(f"[📥 Download High-Res Ad Image]({res_json['ai_image_url']})")
                         
                         st.subheader(f"🎬 Ad Video ({selected_duration} - {res_json['video_source']}):")
                         st.video(res_json["video_url"])
@@ -192,7 +190,7 @@ else:
                         res_json = res.json()["generated_content"]
                         st.success(f"Viral {selected_duration} Video & Script Generated!")
                         
-                        st.subheader("🖼️ AI Generated Thumbnail:")
+                        st.subheader(f"🖼️ AI Generated Thumbnail for {v_title}:")
                         st.image(res_json["ai_image_url"], use_container_width=True)
                         st.markdown(f"[📥 Download Thumbnail]({res_json['ai_image_url']})")
                         
