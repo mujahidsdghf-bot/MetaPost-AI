@@ -4,11 +4,11 @@ import hashlib
 import requests
 import urllib.parse
 
-app = FastAPI(title="MetaPost AI Ultimate Pro API", version="9.0")
+app = FastAPI(title="MetaPost AI Ultimate Pro API", version="10.0")
 
 users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 620, "earnings": 340.00, "conversions": 55}
+analytics_data = {"clicks": 680, "earnings": 410.00, "conversions": 60}
 
 ACCESS_TOKEN = "YOUR_META_PERMANENT_ACCESS_TOKEN"
 INSTAGRAM_ACCOUNT_ID = "YOUR_IG_USER_ID"
@@ -53,20 +53,28 @@ async def generate_content(
 ):
     results = {}
     
+    # ఆప్షన్ల వారీగా కంటెంట్ జనరేట్ చేయడం
     if option_type == "అఫిలియేట్ మార్కెటింగ్":
         results['title'] = f"🔥 Affiliate Promo: {title_name}"
-        results['content'] = f"ప్రత్యేకమైన ఆఫర్! {title_name} ని ఇప్పుడే సొంతం చేసుకోండి.\n{description_text}\n👉 ఇక్కడ కొనండి: {link_url}"
+        results['content'] = f"ప్రత్యేకమైన ఆఫర్! {title_name} ని ఇప్పుడే సొంతం చేసుకోండి.\n\n{description_text}\n\n👉 ఇక్కడ కొనండి: {link_url}\n\n#AffiliateMarketing #SpecialDeals"
+    
     elif option_type == "బిజినెస్ & ఆటో యాడ్స్":
         results['title'] = f"🚀 Business Ad: {title_name}"
-        results['content'] = f"మీ వ్యాపారం కోసం ప్రత్యేక ప్రకటన: {title_name}\n{description_text}\n👉 వెబ్‌సైట్ / లొకేషన్: {link_url}"
+        results['content'] = f"మీ వ్యాపారం / హోటల్ కోసం ప్రత్యేక ప్రకటన: {title_name}\n\n{description_text}\n\n👉 వెబ్‌సైట్ / లొకేషన్: {link_url}\n\n#BusinessGrowth #LocalAds"
+    
     elif option_type == "సోషల్ మీడియా వీడియోలు":
         results['title'] = f"🎬 Viral Video Script: {title_name}"
-        results['content'] = f"**YouTube Shorts / Reels Script:**\n- Hook: {description_text}\n- Body: అత్యుత్తమ ప్రయోజనాలు!\n- CTA: సబ్‌స్క్రైబ్ చేయండి!"
+        results['content'] = f"🎥 **YouTube Shorts / Reels Script & Guide**\n\n- **Hook (0-5s):** మీరు కూడా {title_name} గురించి ఈ సీక్రెట్ తెలుసుకోవాలనుకుంటున్నారా?\n- **Body:** {description_text}\n- **Call to Action:** ఇలాంటి మరిన్ని వీడియోల కోసం మన ఛానెల్‌ని Subscribe చేయండి!\n\n#Shorts #Reels #Monetization"
 
-    encoded_prompt = urllib.parse.quote(f"Professional marketing banner for {title_name}, 4k, vibrant")
+    # AI ఇమేజ్ / బ్యానర్ ఆటోమేటిక్‌గా జనరేట్ చేయడం
+    encoded_prompt = urllib.parse.quote(f"Professional marketing banner for {title_name}, 4k, vibrant colors, high quality")
     results['ai_image_url'] = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1080&height=1080&nologo=true"
 
-    campaign_entry = {"username": username, "type": option_type, "name": title_name}
+    campaign_entry = {
+        "username": username,
+        "type": option_type,
+        "name": title_name
+    }
     campaigns_db.append(campaign_entry)
     
     return {"status": "success", "generated_content": results}
@@ -82,4 +90,9 @@ def auto_publish_content(data: AutoPublishRequest):
 
 @app.get("/analytics/{username}")
 def get_analytics(username: str):
-    return {"analytics": analytics_data, "campaigns": [c for c in campaigns_db if c["username"] == username]}
+    user_campaigns = [c for c in campaigns_db if c["username"] == username]
+    return {
+        "analytics": analytics_data,
+        "total_campaigns": len(user_campaigns),
+        "campaigns": user_campaigns
+    }
