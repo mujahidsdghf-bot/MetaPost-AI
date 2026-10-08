@@ -4,11 +4,11 @@ import hashlib
 import requests
 import urllib.parse
 
-app = FastAPI(title="MetaPost AI Ultimate Pro API", version="19.0")
+app = FastAPI(title="MetaPost AI Ultimate Pro API", version="20.0")
 
 users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 1520, "earnings": 1050.00, "conversions": 210}
+analytics_data = {"clicks": 1650, "earnings": 1150.00, "conversions": 230}
 
 ACCESS_TOKEN = "YOUR_META_PERMANENT_ACCESS_TOKEN"
 INSTAGRAM_ACCOUNT_ID = "YOUR_IG_USER_ID"
@@ -68,27 +68,19 @@ async def generate_content(
         results['title'] = f"Viral AI Video Script ({video_duration}): {title_name} ({language})"
         results['content'] = f"🎥 **Professional {video_duration} Video Script & Production Guide**\n\n- **Hook (0-10s):** Stop scrolling! Here is why everyone is talking about {title_name}.\n- **Core Presentation ({video_duration}):** Detailed breakdown of {description_text}.\n- **Call to Action:** Like, subscribe, and click the link in bio!\n\n#ViralReels #Shorts #Trending"
 
-    # Dynamic High-Quality AI Banner Prompt tailored to the user's input
-    clean_banner_prompt = urllib.parse.quote(f"Professional commercial advertisement for {title_name}, high definition 4k, photorealistic studio lighting, trending on artstation")
+    clean_banner_prompt = urllib.parse.quote(f"Professional commercial advertisement for {title_name}, high definition 4k, photorealistic studio lighting")
     results['ai_image_url'] = f"https://image.pollinations.ai/prompt/{clean_banner_prompt}?width=1080&height=1350&nologo=true"
 
-    # Intelligent Video Matching based on Topic Category (Tailoring, Business, Fashion, Tech, Food, etc.)
+    # టెయిల్రింగ్, ఫుడ్ లేదా ఇతర బిజినెస్ కేటగిరీల ఆధారంగా కచ్చితమైన ఒరిజినల్ వీడియోను మ్యాప్ చేయడం
     t_lower = title_name.lower()
     if "tailor" in t_lower or "blouse" in t_lower or "sewing" in t_lower or "fashion" in t_lower or "dress" in t_lower:
-        # Professional crafting / fashion showcase video
         results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-tailor-working-with-a-sewing-machine-42999-large.mp4"
         results['video_source'] = f"AI Tailoring & Crafting HD Video for {title_name}"
     elif "food" in t_lower or "hotel" in t_lower or "biryani" in t_lower or "restaurant" in t_lower or "cooking" in t_lower:
-        # Restaurant / Food cooking video
         results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-chef-cooking-in-a-kitchen-43285-large.mp4"
         results['video_source'] = f"AI Professional Culinary HD Video for {title_name}"
-    elif "tech" in t_lower or "mobile" in t_lower or "watch" in t_lower or "card" in t_lower:
-        # Tech & Business promotional video
-        results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-a-green-screen-41584-large.mp4"
-        results['video_source'] = f"AI Tech & Business HD Video for {title_name}"
     else:
-        # General Premium Commercial Video
-        results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-and-lights-31972-large.mp4"
+        results['video_url'] = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
         results['video_source'] = f"AI Premium Commercial HD Video for {title_name}"
 
     campaign_entry = {
