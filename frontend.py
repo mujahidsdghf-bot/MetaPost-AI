@@ -61,9 +61,12 @@ else:
     
     selected_lang = st.sidebar.selectbox("🌐 Select Output Language", ["English", "Telugu", "Hindi", "Spanish", "French", "Arabic"])
     
+    # Video Duration Selector for AI Videos (2 min, 3 min, 5 min, 10 min)
+    selected_duration = st.sidebar.selectbox("⏱️ Select AI Video Duration", ["2 Minutes", "3 Minutes", "5 Minutes", "10 Minutes"])
+    
     menu = st.sidebar.selectbox("Main Dashboard Menu", [
-        "1️⃣ Affiliate Marketing Suite", 
-        "2️⃣ Business & Auto Ads (Link/Photos)", 
+        "1️⃣ Affiliate Marketing Suite (Video & Ad)", 
+        "2️⃣ Business & Auto Ads (Link/Photos/Videos/Create AI)", 
         "3️⃣ Social Media Videos & Download", 
         "4️⃣ Meta & WhatsApp Auto-Publishing",
         "5️⃣ SaaS Subscription Plans", 
@@ -76,13 +79,15 @@ else:
         st.session_state['username'] = ""
         st.rerun()
         
-    elif menu == "1️⃣ Affiliate Marketing Suite":
-        st.title("💼 Affiliate Marketing Content Generator")
+    elif menu == "1️⃣ Affiliate Marketing Suite (Video & Ad)":
+        st.title("💼 Affiliate Marketing Content, Banner & Video Generator")
+        st.write(f"Generate high-converting promotional posts, matching banners, and custom {selected_duration} promotional videos for your affiliate links.")
+        
         with st.form("aff_form"):
             t_name = st.text_input("Product Name:")
             desc = st.text_area("Product Details / Offers:")
             link = st.text_input("Affiliate Tracking Link:")
-            submitted = st.form_submit_button("Generate Content & Banner")
+            submitted = st.form_submit_button("Generate Affiliate Ad, Banner & Video")
             
             if submitted:
                 if t_name:
@@ -92,52 +97,71 @@ else:
                         "title_name": t_name,
                         "description_text": desc,
                         "link_url": link,
-                        "language": selected_lang
+                        "language": selected_lang,
+                        "video_duration": selected_duration
                     }
                     res = requests.post(f"{BACKEND_URL}/generate-content", data=data)
                     if res.status_code == 200:
                         res_json = res.json()["generated_content"]
-                        st.success("Content Generated Successfully!")
+                        st.success("Affiliate Package Generated Successfully!")
                         
                         st.subheader("🖼️ AI Generated Promotional Banner:")
                         st.image(res_json["ai_image_url"], use_container_width=True)
                         st.markdown(f"[📥 Download Banner Image]({res_json['ai_image_url']})")
+                        
+                        st.subheader(f"🎬 Generated {selected_duration} Promotional Video (Play & Download):")
+                        st.video(res_json["video_url"])
+                        st.markdown(f"[📥 Download MP4 Video]({res_json['video_url']})")
                         
                         st.subheader("📌 Generated Caption & Copy")
                         st.write(res_json["content"])
                 else:
                     st.warning("Please enter product name.")
 
-    elif menu == "2️⃣ Business & Auto Ads (Link/Photos)":
+    elif menu == "2️⃣ Business & Auto Ads (Link/Photos/Videos/Create AI)":
         st.title("🚀 Business & Auto Ads Suite")
+        st.write(f"Provide your website link, upload media, or let AI auto-create a {selected_duration} commercial video ad for Meta & WhatsApp.")
+        
         with st.form("biz_form"):
             b_name = st.text_input("Business / Hotel Name:")
             b_desc = st.text_area("Offer or Service Description:")
-            b_link = st.text_input("Website or Location Link:")
-            up_img = st.file_uploader("Upload Menu / Business Photo:", type=["jpg", "png", "jpeg"])
-            submitted = st.form_submit_button("Generate Business Ad & Video")
+            b_link = st.text_input("Website or Location Link (AI will extract content if no media provided):")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                up_img = st.file_uploader("Upload Business Photo (Optional):", type=["jpg", "png", "jpeg"])
+            with col2:
+                up_vid = st.file_uploader("Upload Business Video (Optional):", type=["mp4", "mov", "avi"])
+                
+            submitted = st.form_submit_button("Generate Business Ad Package")
             
             if submitted:
                 if b_name:
-                    files = {"image": (up_img.name, up_img.getvalue(), up_img.type)} if up_img else None
+                    files = {}
+                    if up_img:
+                        files["image"] = (up_img.name, up_img.getvalue(), up_img.type)
+                    if up_vid:
+                        files["video"] = (up_vid.name, up_vid.getvalue(), up_vid.type)
+                        
                     data = {
                         "username": st.session_state['username'],
                         "option_type": "Business & Auto Ads",
                         "title_name": b_name,
                         "description_text": b_desc,
                         "link_url": b_link,
-                        "language": selected_lang
+                        "language": selected_lang,
+                        "video_duration": selected_duration
                     }
-                    res = requests.post(f"{BACKEND_URL}/generate-content", data=data, files=files)
+                    res = requests.post(f"{BACKEND_URL}/generate-content", data=data, files=files if files else None)
                     if res.status_code == 200:
                         res_json = res.json()["generated_content"]
-                        st.success("Business Ad & Video Generated Successfully!")
+                        st.success("Business Ad Package Generated Successfully!")
                         
                         st.subheader("🖼️ AI Generated Business Banner:")
                         st.image(res_json["ai_image_url"], use_container_width=True)
                         st.markdown(f"[📥 Download Ad Image]({res_json['ai_image_url']})")
                         
-                        st.subheader("🎬 Generated Promotional Video (Play & Download):")
+                        st.subheader(f"🎬 Ad Video ({selected_duration} - {res_json['video_source']}):")
                         st.video(res_json["video_url"])
                         st.markdown(f"[📥 Download MP4 Video]({res_json['video_url']})")
                         
@@ -147,11 +171,11 @@ else:
                     st.warning("Please enter business name.")
 
     elif menu == "3️⃣ Social Media Videos & Download":
-        st.title("🎬 Social Media Videos & Download Suite")
+        st.title(f"🎬 Social Media Videos ({selected_duration}) & Download Suite")
         with st.form("vid_form"):
             v_title = st.text_input("Video Topic / Product Name:")
             v_desc = st.text_input("Video Hook or Key Message:")
-            submitted = st.form_submit_button("Generate Video & Thumbnail")
+            submitted = st.form_submit_button(f"Generate {selected_duration} Video & Thumbnail")
             
             if submitted:
                 if v_title:
@@ -160,18 +184,19 @@ else:
                         "option_type": "Social Media Videos",
                         "title_name": v_title,
                         "description_text": v_desc,
-                        "language": selected_lang
+                        "language": selected_lang,
+                        "video_duration": selected_duration
                     }
                     res = requests.post(f"{BACKEND_URL}/generate-content", data=data)
                     if res.status_code == 200:
                         res_json = res.json()["generated_content"]
-                        st.success("Video & Script Generated!")
+                        st.success(f"Viral {selected_duration} Video & Script Generated!")
                         
                         st.subheader("🖼️ AI Generated Thumbnail:")
                         st.image(res_json["ai_image_url"], use_container_width=True)
                         st.markdown(f"[📥 Download Thumbnail]({res_json['ai_image_url']})")
                         
-                        st.subheader("🎥 Preview & Download Generated Video:")
+                        st.subheader(f"🎥 Preview & Download {selected_duration} Generated Video:")
                         st.video(res_json["video_url"])
                         st.markdown(f"[📥 Download MP4 Video]({res_json['video_url']})")
                         
@@ -243,6 +268,6 @@ else:
                 st.markdown("---")
                 st.subheader("📁 Saved Campaign History")
                 for camp in data["campaigns"]:
-                    st.write(f"- **Type:** {camp['type']} | **Name:** {camp['name']}")
+                    st.write(f"- **Type:** {camp['type']} | **Name:** {camp['name']} | **Duration:** {camp.get('duration', 'N/A')}")
         except Exception as e:
             st.error("Failed to load analytics data.")
