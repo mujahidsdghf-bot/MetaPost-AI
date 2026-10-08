@@ -4,11 +4,11 @@ import hashlib
 import requests
 import urllib.parse
 
-app = FastAPI(title="MetaPost AI Ultimate Pro API", version="10.0")
+app = FastAPI(title="MetaPost AI Ultimate Pro API", version="11.0")
 
 users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 680, "earnings": 410.00, "conversions": 60}
+analytics_data = {"clicks": 750, "earnings": 490.00, "conversions": 75}
 
 ACCESS_TOKEN = "YOUR_META_PERMANENT_ACCESS_TOKEN"
 INSTAGRAM_ACCOUNT_ID = "YOUR_IG_USER_ID"
@@ -31,16 +31,16 @@ class AutoPublishRequest(BaseModel):
 @app.post("/signup")
 def signup(user: UserRegister):
     if user.username in users_db:
-        raise HTTPException(status_code=400, detail="ఈ యూజర్ పేరు / మెయిల్ ఐడి ఇప్పటికే రిజిస్టర్ చేయబడింది.")
+        raise HTTPException(status_code=400, detail="This email / username is already registered.")
     users_db[user.username] = hashlib.sha256(user.password.encode()).hexdigest()
-    return {"message": "ఖాతా విజయవంతంగా సృష్టించబడింది!"}
+    return {"message": "Account created successfully!"}
 
 @app.post("/login")
 def login(user: UserLogin):
     hashed_pass = hashlib.sha256(user.password.encode()).hexdigest()
     if user.username in users_db and users_db[user.username] == hashed_pass:
-        return {"message": "లాగిన్ విజయవంతమైంది!", "username": user.username}
-    raise HTTPException(status_code=401, detail="తప్పు యూజర్ పేరు లేదా పాస్‌వర్డ్.")
+        return {"message": "Login successful!", "username": user.username}
+    raise HTTPException(status_code=401, detail="Invalid username or password.")
 
 @app.post("/generate-content")
 async def generate_content(
@@ -49,25 +49,26 @@ async def generate_content(
     title_name: str = Form(...),
     description_text: str = Form(...),
     link_url: str = Form(""),
+    language: str = Form("English"),
     image: UploadFile = File(None)
 ):
     results = {}
     
-    # ఆప్షన్ల వారీగా కంటెంట్ జనరేట్ చేయడం
-    if option_type == "అఫిలియేట్ మార్కెటింగ్":
-        results['title'] = f"🔥 Affiliate Promo: {title_name}"
-        results['content'] = f"ప్రత్యేకమైన ఆఫర్! {title_name} ని ఇప్పుడే సొంతం చేసుకోండి.\n\n{description_text}\n\n👉 ఇక్కడ కొనండి: {link_url}\n\n#AffiliateMarketing #SpecialDeals"
+    # Multilingual & Official Formatting
+    if option_type == "Affiliate Marketing":
+        results['title'] = f"🔥 Exclusive Affiliate Promo: {title_name} ({language})"
+        results['content'] = f"Special Offer! Get your {title_name} today.\n\n{description_text}\n\n👉 Buy Now: {link_url}\n\n#AffiliateMarketing #BestDeals #{language}"
     
-    elif option_type == "బిజినెస్ & ఆటో యాడ్స్":
-        results['title'] = f"🚀 Business Ad: {title_name}"
-        results['content'] = f"మీ వ్యాపారం / హోటల్ కోసం ప్రత్యేక ప్రకటన: {title_name}\n\n{description_text}\n\n👉 వెబ్‌సైట్ / లొకేషన్: {link_url}\n\n#BusinessGrowth #LocalAds"
+    elif option_type == "Business & Auto Ads":
+        results['title'] = f"🚀 Official Business Ad: {title_name} ({language})"
+        results['content'] = f"Boost your business with our special ad for {title_name}.\n\n{description_text}\n\n👉 Website / Location: {link_url}\n\n#BusinessGrowth #LocalAds #{language}"
     
-    elif option_type == "సోషల్ మీడియా వీడియోలు":
-        results['title'] = f"🎬 Viral Video Script: {title_name}"
-        results['content'] = f"🎥 **YouTube Shorts / Reels Script & Guide**\n\n- **Hook (0-5s):** మీరు కూడా {title_name} గురించి ఈ సీక్రెట్ తెలుసుకోవాలనుకుంటున్నారా?\n- **Body:** {description_text}\n- **Call to Action:** ఇలాంటి మరిన్ని వీడియోల కోసం మన ఛానెల్‌ని Subscribe చేయండి!\n\n#Shorts #Reels #Monetization"
+    elif option_type == "Social Media Videos":
+        results['title'] = f"🎬 Viral Video Script: {title_name} ({language})"
+        results['content'] = f"🎥 **YouTube Shorts & Instagram Reels Script ({language})**\n\n- **Hook (0-5s):** Want to know the secret behind {title_name}?\n- **Body:** {description_text}\n- **Call to Action:** Subscribe to our channel for more amazing content!\n\n#Shorts #Reels #Monetization #{language}"
 
-    # AI ఇమేజ్ / బ్యానర్ ఆటోమేటిక్‌గా జనరేట్ చేయడం
-    encoded_prompt = urllib.parse.quote(f"Professional marketing banner for {title_name}, 4k, vibrant colors, high quality")
+    # AI Banner Generation URL
+    encoded_prompt = urllib.parse.quote(f"High end professional commercial banner for {title_name}, 4k resolution, cinematic lighting, corporate look")
     results['ai_image_url'] = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1080&height=1080&nologo=true"
 
     campaign_entry = {
@@ -83,9 +84,9 @@ async def generate_content(
 def auto_publish_content(data: AutoPublishRequest):
     results = {}
     if "Instagram" in data.target_platforms:
-        results["Instagram"] = "ఇన్‌స్టాగ్రామ్‌లో విజయవంతంగా పోస్ట్ చేయబడింది!"
+        results["Instagram"] = "Successfully posted to Instagram!"
     if "WhatsApp" in data.target_platforms:
-        results["WhatsApp"] = "వాట్సాప్ ద్వారా మెసేజ్ పంపబడింది!"
+        results["WhatsApp"] = "Message successfully sent via WhatsApp!"
     return {"status": "success", "publish_results": results}
 
 @app.get("/analytics/{username}")
