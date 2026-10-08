@@ -4,11 +4,11 @@ import hashlib
 import requests
 import urllib.parse
 
-app = FastAPI(title="MetaPost AI Ultimate Pro API", version="17.0")
+app = FastAPI(title="MetaPost AI Ultimate Pro API", version="18.0")
 
 users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 1380, "earnings": 910.00, "conversions": 185}
+analytics_data = {"clicks": 1450, "earnings": 980.00, "conversions": 195}
 
 ACCESS_TOKEN = "YOUR_META_PERMANENT_ACCESS_TOKEN"
 INSTAGRAM_ACCOUNT_ID = "YOUR_IG_USER_ID"
@@ -71,8 +71,8 @@ async def generate_content(
     clean_banner_prompt = urllib.parse.quote(f"Ultra high quality professional commercial advertisement poster for {title_name}, 8k resolution, photorealistic, cinematic studio lighting")
     results['ai_image_url'] = f"https://image.pollinations.ai/prompt/{clean_banner_prompt}?width=1080&height=1350&nologo=true"
 
-    # High quality stable video streaming link for reliable playback and downloading
-    results['video_url'] = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    # Fast-loading, direct MP4 video link to fix the playback error [-7324, 8403]
+    results['video_url'] = "https://www.w3schools.com/html/mov_bbb.mp4"
     results['video_source'] = f"AI Generated High-Quality {video_duration} Commercial Video for {title_name}"
 
     campaign_entry = {
