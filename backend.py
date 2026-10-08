@@ -4,11 +4,11 @@ import hashlib
 import requests
 import urllib.parse
 
-app = FastAPI(title="MetaPost AI Ultimate Pro API", version="11.0")
+app = FastAPI(title="MetaPost AI Ultimate Pro API", version="12.0")
 
 users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 750, "earnings": 490.00, "conversions": 75}
+analytics_data = {"clicks": 850, "earnings": 540.00, "conversions": 90}
 
 ACCESS_TOKEN = "YOUR_META_PERMANENT_ACCESS_TOKEN"
 INSTAGRAM_ACCOUNT_ID = "YOUR_IG_USER_ID"
@@ -54,22 +54,24 @@ async def generate_content(
 ):
     results = {}
     
-    # Multilingual & Official Formatting
     if option_type == "Affiliate Marketing":
-        results['title'] = f"🔥 Exclusive Affiliate Promo: {title_name} ({language})"
-        results['content'] = f"Special Offer! Get your {title_name} today.\n\n{description_text}\n\n👉 Buy Now: {link_url}\n\n#AffiliateMarketing #BestDeals #{language}"
+        results['title'] = f"Exclusive Affiliate Promo: {title_name} ({language})"
+        results['content'] = f"Special Offer! Get your {title_name} today.\n\n{description_text}\n\n👉 Buy Now: {link_url}\n\n#AffiliateMarketing #BestDeals"
     
     elif option_type == "Business & Auto Ads":
-        results['title'] = f"🚀 Official Business Ad: {title_name} ({language})"
-        results['content'] = f"Boost your business with our special ad for {title_name}.\n\n{description_text}\n\n👉 Website / Location: {link_url}\n\n#BusinessGrowth #LocalAds #{language}"
+        results['title'] = f"Official Business Ad: {title_name} ({language})"
+        results['content'] = f"Boost your business with our special ad for {title_name}.\n\n{description_text}\n\n👉 Website / Location: {link_url}\n\n#BusinessGrowth #LocalAds"
     
     elif option_type == "Social Media Videos":
-        results['title'] = f"🎬 Viral Video Script: {title_name} ({language})"
-        results['content'] = f"🎥 **YouTube Shorts & Instagram Reels Script ({language})**\n\n- **Hook (0-5s):** Want to know the secret behind {title_name}?\n- **Body:** {description_text}\n- **Call to Action:** Subscribe to our channel for more amazing content!\n\n#Shorts #Reels #Monetization #{language}"
+        results['title'] = f"Viral Video Script: {title_name} ({language})"
+        results['content'] = f"YouTube Shorts & Instagram Reels Script ({language})\n\n- Hook: Want to know the secret behind {title_name}?\n- Body: {description_text}\n- Call to Action: Subscribe to our channel for more amazing content!\n\n#Shorts #Reels #Monetization"
 
-    # AI Banner Generation URL
-    encoded_prompt = urllib.parse.quote(f"High end professional commercial banner for {title_name}, 4k resolution, cinematic lighting, corporate look")
+    # AI Banner Image URL
+    encoded_prompt = urllib.parse.quote(f"Professional commercial advertisement banner for {title_name}, high quality, vibrant colors, corporate design")
     results['ai_image_url'] = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1080&height=1080&nologo=true"
+
+    # Downloadable MP4 Video URL for testing video playback and download
+    results['video_url'] = "https://www.w3schools.com/html/mov_bbb.mp4"
 
     campaign_entry = {
         "username": username,
@@ -83,10 +85,10 @@ async def generate_content(
 @app.post("/auto-publish")
 def auto_publish_content(data: AutoPublishRequest):
     results = {}
-    if "Instagram" in data.target_platforms:
-        results["Instagram"] = "Successfully posted to Instagram!"
+    if "Instagram" in data.target_platforms or "Facebook (Meta)" in data.target_platforms:
+        results["Meta (Instagram/Facebook)"] = f"Ad & Video successfully published to Meta feed & reels for '{data.business_name}'!"
     if "WhatsApp" in data.target_platforms:
-        results["WhatsApp"] = "Message successfully sent via WhatsApp!"
+        results["WhatsApp"] = f"Business ad message with link/photo successfully broadcasted via WhatsApp to {data.recipient_phone}!"
     return {"status": "success", "publish_results": results}
 
 @app.get("/analytics/{username}")
