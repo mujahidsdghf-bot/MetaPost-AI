@@ -3,13 +3,15 @@ import requests
 
 BACKEND_URL = "https://metapost-backend.onrender.com"
 
-st.set_page_config(page_title="MetaPost AI Ultimate Pro", page_icon="🚀", layout="wide")
+st.set_page_config(page_title="MetaPost AI Ultimate Pro - Official Suite", page_icon="⚡", layout="wide")
 
+# High Official UI CSS Theme (Professional Corporate Look)
 st.markdown("""
     <style>
-    .main { background-color: #0e1117; color: #ffffff; }
-    .stButton>button { width: 100%; border-radius: 10px; background: linear-gradient(90deg, #ff4b4b, #ff8f00); color: white; font-weight: bold; border: none; padding: 10px; }
-    .stButton>button:hover { background: linear-gradient(90deg, #ff2222, #ff6600); }
+    .main { background-color: #0b0f19; color: #f3f4f6; }
+    .stButton>button { width: 100%; border-radius: 8px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; font-weight: bold; border: none; padding: 12px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4); }
+    .stButton>button:hover { background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%); }
+    .css-1104ytp { background-color: #111827; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -19,166 +21,191 @@ if 'username' not in st.session_state:
     st.session_state['username'] = ""
 
 if not st.session_state['logged_in']:
-    st.title("🚀 MetaPost AI Ultimate Pro - లాగిన్ సూట్")
-    tab1, tab2 = st.tabs(["లాగిన్ (Login)", "కొత్త ఖాతా (Sign Up)"])
+    st.title("⚡ MetaPost AI Ultimate Pro - Official Portal")
+    st.write("Welcome to the next-generation AI marketing, video generation, and monetization suite.")
+    
+    tab1, tab2 = st.tabs(["Secure Login", "Create New Account"])
     
     with tab1:
         with st.form("login_form"):
-            l_user = st.text_input("యూజర్ పేరు / మెయిల్ ఐడి")
-            l_pass = st.text_input("పాస్‌వర్డ్", type="password")
-            if st.form_submit_button("లాగిన్ అవ్వండి"):
+            l_user = st.text_input("Username / Email ID")
+            l_pass = st.text_input("Password", type="password")
+            if st.form_submit_button("Sign In"):
                 try:
                     res = requests.post(f"{BACKEND_URL}/login", json={"username": l_user, "password": l_pass})
                     if res.status_code == 200:
                         st.session_state['logged_in'] = True
                         st.session_state['username'] = l_user
-                        st.success("లాగిన్ విజయవంతమైంది!")
+                        st.success("Login Successful!")
                         st.rerun()
                     else:
-                        st.error("తప్పు యూజర్ పేరు లేదా పాస్‌వర్డ్.")
+                        st.error("Invalid username or password.")
                 except Exception as e:
-                    st.error(f"సర్వర్ కనెక్షన్ లోపం: {str(e)}")
+                    st.error(f"Connection error: {str(e)}")
                 
     with tab2:
         with st.form("signup_form"):
-            s_user = st.text_input("కొత్త మెయిల్ ఐడి / యూజర్ పేరు")
-            s_pass = st.text_input("కొత్త పాస్‌వర్డ్", type="password")
-            if st.form_submit_button("ఖాతా సృష్టించు"):
+            s_user = st.text_input("New Email / Username")
+            s_pass = st.text_input("New Password", type="password")
+            if st.form_submit_button("Register Account"):
                 try:
                     res = requests.post(f"{BACKEND_URL}/signup", json={"username": s_user, "password": s_pass})
                     if res.status_code == 200:
-                        st.success("ఖాతా తయారైంది! లాగిన్ అవ్వండి.")
+                        st.success("Account created successfully! Please sign in.")
                     else:
-                        st.error("ఈ యూజర్ పేరు ఇప్పటికే ఉంది.")
+                        st.error("Username already exists.")
                 except Exception as e:
-                    st.error(f"సర్వర్ కనెక్షన్ లోపం: {str(e)}")
+                    st.error(f"Connection error: {str(e)}")
 
 else:
-    st.sidebar.title(f"స్వాగతం, 👋")
+    st.sidebar.title(f"Welcome, 👋")
     st.sidebar.markdown(f"**{st.session_state['username']}**")
     
-    # మీరు కోరిన అన్ని ఆప్షన్‌లు ఇక్కడ ఉన్నాయి
-    menu = st.sidebar.selectbox("ప్రధాన మెను (Menu)", [
-        "1️⃣ అఫిలియేట్ మార్కెటింగ్", 
-        "2️⃣ బిజినెస్ & ఆటో యాడ్స్ (లింక్/ఫోటోలు)", 
-        "3️⃣ సోషల్ మీడియా వీడియోలు (ఇన్‌కమ్ కోసం)", 
-        "4️⃣ సబ్‌స్క్రిప్షన్ ప్లాన్స్", 
-        "⚙️ సెట్టింగ్స్ & అనలిటిక్స్",
-        "🚪 లాగౌట్"
+    # Global Language Selector
+    selected_lang = st.sidebar.selectbox("🌐 Select Output Language", ["English", "Telugu", "Hindi", "Spanish", "French", "Arabic"])
+    
+    menu = st.sidebar.selectbox("Main Dashboard Menu", [
+        "1️⃣ Affiliate Marketing Suite", 
+        "2️⃣ Business & Auto Ads (Link/Photos)", 
+        "3️⃣ Social Media Videos (Monetization)", 
+        "4️⃣ SaaS Subscription Plans", 
+        "⚙️ Analytics & Settings",
+        "🚪 Logout"
     ])
     
-    if menu == "🚪 లాగౌట్":
+    if menu == "🚪 Logout":
         st.session_state['logged_in'] = False
         st.session_state['username'] = ""
         st.rerun()
         
-    elif menu == "1️⃣ అఫిలియేట్ మార్కెటింగ్":
-        st.title("💼 అఫిలియేట్ మార్కెటింగ్ కంటెంట్ జనరేటర్")
-        st.write("అఫిలియేట్ ప్రొడక్ట్స్ ప్రమోట్ చేయడానికి ఆకర్షణీయమైన పోస్టులు మరియు బ్యానర్లు సృష్టించండి!")
+    elif menu == "1️⃣ Affiliate Marketing Suite":
+        st.title("💼 Affiliate Marketing Content Generator")
+        st.write("Generate high-converting promotional posts and professional banners for your affiliate links.")
         
         with st.form("aff_form"):
-            t_name = st.text_input("ప్రొడక్ట్ పేరు:")
-            desc = st.text_area("ప్రొడక్ట్ వివరాలు / ఆఫర్:")
-            link = st.text_input("అఫిలియేట్ లింక్:")
-            submitted = st.form_submit_button("అఫిలియేట్ కంటెంట్ జనరేట్ చేయి")
+            t_name = st.text_input("Product Name:")
+            desc = st.text_area("Product Details / Offers:")
+            link = st.text_input("Affiliate Tracking Link:")
+            submitted = st.form_submit_button("Generate Affiliate Content")
             
             if submitted:
                 if t_name:
                     data = {
                         "username": st.session_state['username'],
-                        "option_type": "అఫిలియేట్ మార్కెటింగ్",
+                        "option_type": "Affiliate Marketing",
                         "title_name": t_name,
                         "description_text": desc,
-                        "link_url": link
+                        "link_url": link,
+                        "language": selected_lang
                     }
                     res = requests.post(f"{BACKEND_URL}/generate-content", data=data)
                     if res.status_code == 200:
                         res_json = res.json()["generated_content"]
-                        st.success("విజయవంతంగా తయారైంది!")
+                        st.success("Content Generated Successfully!")
+                        
+                        st.subheader("🖼️ AI Generated Promotional Banner:")
                         st.image(res_json["ai_image_url"], use_container_width=True)
+                        st.markdown(f"[📥 Download Banner Image]({res_json['ai_image_url']})")
+                        
+                        st.subheader("📌 Generated Caption & Copy")
                         st.write(res_json["content"])
                 else:
-                    st.warning("దయచేసి ప్రొడక్ట్ పేరు ఇవ్వండి.")
+                    st.warning("Please enter the product name.")
 
-    elif menu == "2️⃣ బిజినెస్ & ఆటో యాడ్స్ (లింక్/ఫోటోలు)":
-        st.title("🚀 బిజినెస్ & ఆటో యాడ్స్ డెవలప్‌మెంట్")
-        st.write("మీ హోటల్, రెస్టారెంట్ లేదా స్వంత బిజినెస్ కోసం ఫోటోలు లేదా వెబ్‌సైట్ లింక్‌తో ఆటో యాడ్స్ సృష్టించండి!")
+    elif menu == "2️⃣ Business & Auto Ads (Link/Photos)":
+        st.title("🚀 Business & Auto Ads Suite")
+        st.write("Develop professional advertisements for hotels, restaurants, or businesses using website links or uploaded photos.")
         
         with st.form("biz_form"):
-            b_name = st.text_input("బిజినెస్ / హోటల్ పేరు:")
-            b_desc = st.text_area("ఆఫర్ లేదా సర్వీస్ వివరాలు:")
-            b_link = st.text_input("వెబ్‌సైట్ లేదా లొకేషన్ లింక్:")
-            up_img = st.file_uploader("ఫోటో లేదా మెనూ అప్‌లోడ్ చేయండి:", type=["jpg", "png", "jpeg"])
-            submitted = st.form_submit_button("బిజినెస్ యాడ్ జనరేట్ చేయి")
+            b_name = st.text_input("Business / Hotel Name:")
+            b_desc = st.text_area("Offer or Service Description:")
+            b_link = st.text_input("Website or Location Link:")
+            up_img = st.file_uploader("Upload Menu / Business Photo:", type=["jpg", "png", "jpeg"])
+            submitted = st.form_submit_button("Generate Business Ad")
             
             if submitted:
                 if b_name:
                     files = {"image": (up_img.name, up_img.getvalue(), up_img.type)} if up_img else None
                     data = {
                         "username": st.session_state['username'],
-                        "option_type": "బిజినెస్ & ఆటో యాడ్స్",
+                        "option_type": "Business & Auto Ads",
                         "title_name": b_name,
                         "description_text": b_desc,
-                        "link_url": b_link
+                        "link_url": b_link,
+                        "language": selected_lang
                     }
                     res = requests.post(f"{BACKEND_URL}/generate-content", data=data, files=files)
                     if res.status_code == 200:
                         res_json = res.json()["generated_content"]
-                        st.success("బిజినెస్ యాడ్ తయారైంది!")
+                        st.success("Business Ad Generated Successfully!")
+                        
+                        st.subheader("🖼️ AI Generated Business Banner:")
                         st.image(res_json["ai_image_url"], use_container_width=True)
+                        st.markdown(f"[📥 Download Ad Image]({res_json['ai_image_url']})")
+                        
+                        st.subheader("📌 Ad Copy & Details")
                         st.write(res_json["content"])
                 else:
-                    st.warning("దయచేసి బిజినెస్ పేరు ఇవ్వండి.")
+                    st.warning("Please enter your business name.")
 
-    elif menu == "3️⃣ సోషల్ మీడియా వీడియోలు (ఇన్‌కమ్ కోసం)":
-        st.title("🎬 సోషల్ మీడియా వీడియోలు & మానిటైజేషన్")
-        st.write("YouTube Shorts మరియు Instagram Reels కోసం వైరల్ వీడియో స్క్రిప్ట్స్ సృష్టించి వ్యూస్ & సబ్‌స్క్రిప్ర్స్ ద్వారా ఆదాయం పొందండి!")
+    elif menu == "3️⃣ Social Media Videos (Monetization)":
+        st.title("🎬 Social Media Videos & Monetization Suite")
+        st.write("Create viral scripts for YouTube Shorts & Instagram Reels to drive views, subscribers, and revenue.")
         
         with st.form("vid_form"):
-            v_title = st.text_input("వీడియో టాపిక్ / ప్రొడక్ట్ పేరు:")
-            v_desc = st.text_input("వీడియో హుక్ లేదా ప్రధాన పాయింట్:")
-            submitted = st.form_submit_button("వైరల్ వీడియో స్క్రిప్ట్ జనరేట్ చేయి")
+            v_title = st.text_input("Video Topic / Product Name:")
+            v_desc = st.text_input("Video Hook or Key Message:")
+            submitted = st.form_submit_button("Generate Viral Video Script & Visual")
             
             if submitted:
                 if v_title:
                     data = {
                         "username": st.session_state['username'],
-                        "option_type": "సోషల్ మీడియా వీడియోలు",
+                        "option_type": "Social Media Videos",
                         "title_name": v_title,
-                        "description_text": v_desc
+                        "description_text": v_desc,
+                        "language": selected_lang
                     }
                     res = requests.post(f"{BACKEND_URL}/generate-content", data=data)
                     if res.status_code == 200:
                         res_json = res.json()["generated_content"]
-                        st.success("వీడియో స్క్రిప్ట్ తయారైంది!")
+                        st.success("Video Script & Thumbnail Generated!")
+                        
+                        st.subheader("🖼️ AI Generated Video Thumbnail:")
                         st.image(res_json["ai_image_url"], use_container_width=True)
+                        st.markdown(f"[📥 Download Thumbnail]({res_json['ai_image_url']})")
+                        
+                        st.subheader("📝 Production Guide & Script")
                         st.write(res_json["content"])
                 else:
-                    st.warning("దయచేసి వీడియో టాపిక్ ఇవ్వండి.")
+                    st.warning("Please enter a video topic.")
 
-    elif menu == "4️⃣ సబ్‌స్క్రిప్షన్ ప్లాన్స్":
-        st.title("💎 MetaPost AI - సబ్‌స్క్రిప్షన్ ప్లాన్స్")
-        st.write("అడ్వాన్స్డ్ ఫీచర్లు మరియు అన్లిమిటెడ్ ఆటోమేషన్ కోసం తగిన ప్లాన్‌ను ఎంచుకోండి:")
+    elif menu == "4️⃣ SaaS Subscription Plans":
+        st.title("💎 SaaS Subscription Tiers")
+        st.write("Upgrade your workspace for unlimited automation, advanced AI generation, and priority publishing.")
         
         c1, c2, c3 = st.columns(3)
         with c1:
-            st.subheader("ఫ్రీ ప్లాన్")
-            st.markdown("**₹ 0 / నెల**")
-            st.markdown("- బేసిక్ టెంప్లేట్లు")
-            st.button("ప్రస్తుత ప్లాన్", disabled=True)
+            st.subheader("Free Tier")
+            st.markdown("**$0 / month**")
+            st.markdown("- Basic Templates")
+            st.markdown("- Community Support")
+            st.button("Current Plan", disabled=True)
         with c2:
-            st.subheader("ప్రో ప్లాన్")
-            st.markdown("**₹ 799 / నెల**")
-            st.markdown("- అన్లిమిటెడ్ యాడ్స్ & వీడియో స్క్రిప్ట్స్")
-            st.button("ప్రో ప్లాన్ తీసుకును", key="p_btn")
+            st.subheader("Pro Creator")
+            st.markdown("**$19 / month**")
+            st.markdown("- Unlimited AI Ads & Scripts")
+            st.markdown("- High-Res Banner Downloads")
+            st.button("Upgrade to Pro", key="p_btn")
         with c3:
-            st.subheader("బిజినెస్ ప్లాన్")
-            st.markdown("**₹ 1,999 / నెల**")
-            st.markdown("- పూర్తి బిజినెస్ ఆటోమేషన్ & సపోర్ట్")
-            st.button("బిజినెస్ ప్లాన్ తీసుకును", key="b_btn")
+            st.subheader("Enterprise")
+            st.markdown("**$49 / month**")
+            st.markdown("- Full Business Automation")
+            st.markdown("- Priority API Access")
+            st.button("Get Enterprise", key="e_btn")
 
-    elif menu == "⚙️ సెట్టింగ్స్ & అనలిటిక్స్":
-        st.title("⚙️ సెట్టింగ్స్ మరియు అనలిటిక్స్ డ్యాష్‌బోర్డ్")
+    elif menu == "⚙️ Analytics & Settings":
+        st.title("⚙️ Enterprise Analytics & Configuration")
         try:
             res = requests.get(f"{BACKEND_URL}/analytics/{st.session_state['username']}")
             if res.status_code == 200:
@@ -186,13 +213,13 @@ else:
                 analytics = data["analytics"]
                 
                 c1, c2, c3 = st.columns(3)
-                c1.metric("మొత్తం రీచ్ / క్లిక్స్", analytics["clicks"])
-                c2.metric("సఫలమైన క్యాంపెయిన్స్", len(data["campaigns"]))
-                c3.metric("మొత్తం సంపాదన ($)", f"$ {analytics['earnings']}")
+                c1.metric("Total Reach / Clicks", analytics["clicks"])
+                c2.metric("Active Campaigns", len(data["campaigns"]))
+                c3.metric("Total Earnings ($)", f"$ {analytics['earnings']}")
                 
                 st.markdown("---")
-                st.subheader("📁 మీ సేవ్ చేసిన క్యాంపెయిన్స్")
+                st.subheader("📁 Saved Campaign History")
                 for camp in data["campaigns"]:
-                    st.write(f"- **టైప్:** {camp['type']} | **పేరు:** {camp['name']}")
+                    st.write(f"- **Type:** {camp['type']} | **Name:** {camp['name']}")
         except Exception as e:
-            st.error("అనలిటిక్స్ లోడ్ చేయడంలో లోపం.")
+            st.error("Failed to load analytics data.")
