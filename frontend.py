@@ -5,13 +5,11 @@ BACKEND_URL = "https://metapost-backend.onrender.com"
 
 st.set_page_config(page_title="MetaPost AI Ultimate Pro - Official Suite", page_icon="⚡", layout="wide")
 
-# High Official UI CSS Theme (Professional Corporate Look)
 st.markdown("""
     <style>
     .main { background-color: #0b0f19; color: #f3f4f6; }
     .stButton>button { width: 100%; border-radius: 8px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; font-weight: bold; border: none; padding: 12px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4); }
     .stButton>button:hover { background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%); }
-    .css-1104ytp { background-color: #111827; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -22,7 +20,7 @@ if 'username' not in st.session_state:
 
 if not st.session_state['logged_in']:
     st.title("⚡ MetaPost AI Ultimate Pro - Official Portal")
-    st.write("Welcome to the next-generation AI marketing, video generation, and monetization suite.")
+    st.write("Welcome to the next-generation AI marketing, video generation, and auto-publishing suite.")
     
     tab1, tab2 = st.tabs(["Secure Login", "Create New Account"])
     
@@ -61,14 +59,14 @@ else:
     st.sidebar.title(f"Welcome, 👋")
     st.sidebar.markdown(f"**{st.session_state['username']}**")
     
-    # Global Language Selector
     selected_lang = st.sidebar.selectbox("🌐 Select Output Language", ["English", "Telugu", "Hindi", "Spanish", "French", "Arabic"])
     
     menu = st.sidebar.selectbox("Main Dashboard Menu", [
         "1️⃣ Affiliate Marketing Suite", 
         "2️⃣ Business & Auto Ads (Link/Photos)", 
-        "3️⃣ Social Media Videos (Monetization)", 
-        "4️⃣ SaaS Subscription Plans", 
+        "3️⃣ Social Media Videos & Download", 
+        "4️⃣ Meta & WhatsApp Auto-Publishing",
+        "5️⃣ SaaS Subscription Plans", 
         "⚙️ Analytics & Settings",
         "🚪 Logout"
     ])
@@ -80,13 +78,11 @@ else:
         
     elif menu == "1️⃣ Affiliate Marketing Suite":
         st.title("💼 Affiliate Marketing Content Generator")
-        st.write("Generate high-converting promotional posts and professional banners for your affiliate links.")
-        
         with st.form("aff_form"):
             t_name = st.text_input("Product Name:")
             desc = st.text_area("Product Details / Offers:")
             link = st.text_input("Affiliate Tracking Link:")
-            submitted = st.form_submit_button("Generate Affiliate Content")
+            submitted = st.form_submit_button("Generate Content & Banner")
             
             if submitted:
                 if t_name:
@@ -110,18 +106,16 @@ else:
                         st.subheader("📌 Generated Caption & Copy")
                         st.write(res_json["content"])
                 else:
-                    st.warning("Please enter the product name.")
+                    st.warning("Please enter product name.")
 
     elif menu == "2️⃣ Business & Auto Ads (Link/Photos)":
         st.title("🚀 Business & Auto Ads Suite")
-        st.write("Develop professional advertisements for hotels, restaurants, or businesses using website links or uploaded photos.")
-        
         with st.form("biz_form"):
             b_name = st.text_input("Business / Hotel Name:")
             b_desc = st.text_area("Offer or Service Description:")
             b_link = st.text_input("Website or Location Link:")
             up_img = st.file_uploader("Upload Menu / Business Photo:", type=["jpg", "png", "jpeg"])
-            submitted = st.form_submit_button("Generate Business Ad")
+            submitted = st.form_submit_button("Generate Business Ad & Video")
             
             if submitted:
                 if b_name:
@@ -137,25 +131,27 @@ else:
                     res = requests.post(f"{BACKEND_URL}/generate-content", data=data, files=files)
                     if res.status_code == 200:
                         res_json = res.json()["generated_content"]
-                        st.success("Business Ad Generated Successfully!")
+                        st.success("Business Ad & Video Generated Successfully!")
                         
                         st.subheader("🖼️ AI Generated Business Banner:")
                         st.image(res_json["ai_image_url"], use_container_width=True)
                         st.markdown(f"[📥 Download Ad Image]({res_json['ai_image_url']})")
                         
+                        st.subheader("🎬 Generated Promotional Video (Play & Download):")
+                        st.video(res_json["video_url"])
+                        st.markdown(f"[📥 Download MP4 Video]({res_json['video_url']})")
+                        
                         st.subheader("📌 Ad Copy & Details")
                         st.write(res_json["content"])
                 else:
-                    st.warning("Please enter your business name.")
+                    st.warning("Please enter business name.")
 
-    elif menu == "3️⃣ Social Media Videos (Monetization)":
-        st.title("🎬 Social Media Videos & Monetization Suite")
-        st.write("Create viral scripts for YouTube Shorts & Instagram Reels to drive views, subscribers, and revenue.")
-        
+    elif menu == "3️⃣ Social Media Videos & Download":
+        st.title("🎬 Social Media Videos & Download Suite")
         with st.form("vid_form"):
             v_title = st.text_input("Video Topic / Product Name:")
             v_desc = st.text_input("Video Hook or Key Message:")
-            submitted = st.form_submit_button("Generate Viral Video Script & Visual")
+            submitted = st.form_submit_button("Generate Video & Thumbnail")
             
             if submitted:
                 if v_title:
@@ -169,39 +165,66 @@ else:
                     res = requests.post(f"{BACKEND_URL}/generate-content", data=data)
                     if res.status_code == 200:
                         res_json = res.json()["generated_content"]
-                        st.success("Video Script & Thumbnail Generated!")
+                        st.success("Video & Script Generated!")
                         
-                        st.subheader("🖼️ AI Generated Video Thumbnail:")
+                        st.subheader("🖼️ AI Generated Thumbnail:")
                         st.image(res_json["ai_image_url"], use_container_width=True)
                         st.markdown(f"[📥 Download Thumbnail]({res_json['ai_image_url']})")
                         
-                        st.subheader("📝 Production Guide & Script")
+                        st.subheader("🎥 Preview & Download Generated Video:")
+                        st.video(res_json["video_url"])
+                        st.markdown(f"[📥 Download MP4 Video]({res_json['video_url']})")
+                        
+                        st.subheader("📝 Script & Production Guide")
                         st.write(res_json["content"])
                 else:
-                    st.warning("Please enter a video topic.")
+                    st.warning("Please enter video topic.")
 
-    elif menu == "4️⃣ SaaS Subscription Plans":
-        st.title("💎 SaaS Subscription Tiers")
-        st.write("Upgrade your workspace for unlimited automation, advanced AI generation, and priority publishing.")
+    elif menu == "4️⃣ Meta & WhatsApp Auto-Publishing":
+        st.title("📡 Meta & WhatsApp Auto-Publishing Center")
+        st.write("Automatically publish your generated business ads and videos directly to Facebook, Instagram, and WhatsApp!")
         
+        with st.form("auto_pub_form"):
+            b_name = st.text_input("Business / Brand Name:")
+            caption = st.text_area("Post Caption / Message Text:")
+            platforms = st.multiselect("Select Target Platforms:", ["Facebook (Meta)", "Instagram", "WhatsApp"])
+            phone = st.text_input("WhatsApp Number (with country code, e.g., +919876543210):")
+            pub_btn = st.form_submit_button("Auto-Publish Now")
+            
+            if pub_btn:
+                if b_name and caption and platforms:
+                    payload = {
+                        "business_name": b_name,
+                        "caption": caption,
+                        "target_platforms": platforms,
+                        "recipient_phone": phone
+                    }
+                    with st.spinner("Publishing to Meta & WhatsApp..."):
+                        res = requests.post(f"{BACKEND_URL}/auto-publish", json=payload)
+                        if res.status_code == 200:
+                            res_data = res.json().get("publish_results", {})
+                            st.success("Auto-publishing completed successfully!")
+                            for plat, msg in res_data.items():
+                                st.info(f"**{plat}:** {msg}")
+                        else:
+                            st.error("Auto-publishing failed.")
+                else:
+                    st.warning("Please fill in all required fields and select at least one platform.")
+
+    elif menu == "5️⃣ SaaS Subscription Plans":
+        st.title("💎 SaaS Subscription Tiers")
         c1, c2, c3 = st.columns(3)
         with c1:
             st.subheader("Free Tier")
             st.markdown("**$0 / month**")
-            st.markdown("- Basic Templates")
-            st.markdown("- Community Support")
             st.button("Current Plan", disabled=True)
         with c2:
             st.subheader("Pro Creator")
             st.markdown("**$19 / month**")
-            st.markdown("- Unlimited AI Ads & Scripts")
-            st.markdown("- High-Res Banner Downloads")
             st.button("Upgrade to Pro", key="p_btn")
         with c3:
             st.subheader("Enterprise")
             st.markdown("**$49 / month**")
-            st.markdown("- Full Business Automation")
-            st.markdown("- Priority API Access")
             st.button("Get Enterprise", key="e_btn")
 
     elif menu == "⚙️ Analytics & Settings":
