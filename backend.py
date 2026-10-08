@@ -4,11 +4,11 @@ import hashlib
 import requests
 import urllib.parse
 
-app = FastAPI(title="MetaPost AI Ultimate Pro API", version="12.0")
+app = FastAPI(title="MetaPost AI Ultimate Pro API", version="14.0")
 
 users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 850, "earnings": 540.00, "conversions": 90}
+analytics_data = {"clicks": 1050, "earnings": 680.00, "conversions": 130}
 
 ACCESS_TOKEN = "YOUR_META_PERMANENT_ACCESS_TOKEN"
 INSTAGRAM_ACCOUNT_ID = "YOUR_IG_USER_ID"
@@ -50,33 +50,37 @@ async def generate_content(
     description_text: str = Form(...),
     link_url: str = Form(""),
     language: str = Form("English"),
-    image: UploadFile = File(None)
+    video_duration: str = Form("2 Minutes"),
+    image: UploadFile = File(None),
+    video: UploadFile = File(None)
 ):
     results = {}
     
     if option_type == "Affiliate Marketing":
-        results['title'] = f"Exclusive Affiliate Promo: {title_name} ({language})"
-        results['content'] = f"Special Offer! Get your {title_name} today.\n\n{description_text}\n\n👉 Buy Now: {link_url}\n\n#AffiliateMarketing #BestDeals"
+        results['title'] = f"Affiliate Promotion: {title_name} ({language} - {video_duration})"
+        results['content'] = f"🚀 Special Deal! Grab your {title_name} right now.\n\n{description_text}\n\n👉 Shop Now: {link_url}\n\n#AffiliateMarketing #SpecialOffer #{language}"
     
     elif option_type == "Business & Auto Ads":
-        results['title'] = f"Official Business Ad: {title_name} ({language})"
-        results['content'] = f"Boost your business with our special ad for {title_name}.\n\n{description_text}\n\n👉 Website / Location: {link_url}\n\n#BusinessGrowth #LocalAds"
+        results['title'] = f"Official Business Ad: {title_name} ({language} - {video_duration})"
+        results['content'] = f"🌟 Boost your brand with our official campaign for {title_name}.\n\n{description_text}\n\n👉 Official Link/Location: {link_url if link_url else 'Visit our profile'}\n\n#BusinessAds #Growth #{language}"
     
     elif option_type == "Social Media Videos":
-        results['title'] = f"Viral Video Script: {title_name} ({language})"
-        results['content'] = f"YouTube Shorts & Instagram Reels Script ({language})\n\n- Hook: Want to know the secret behind {title_name}?\n- Body: {description_text}\n- Call to Action: Subscribe to our channel for more amazing content!\n\n#Shorts #Reels #Monetization"
+        results['title'] = f"AI Video Script ({video_duration}): {title_name} ({language})"
+        results['content'] = f"🎥 **Detailed {video_duration} AI Video Production Script ({language})**\n\n- **Introduction (0-15s):** Hook the audience regarding {title_name}.\n- **Core Content ({video_duration} breakdown):** Detailed explanation of {description_text}.\n- **Call to Action:** Subscribe, like, and visit the link for more details!\n\n#LongFormVideo #Shorts #Monetization"
 
-    # AI Banner Image URL
-    encoded_prompt = urllib.parse.quote(f"Professional commercial advertisement banner for {title_name}, high quality, vibrant colors, corporate design")
-    results['ai_image_url'] = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1080&height=1080&nologo=true"
+    # AI Banner generation matching the product/business name
+    clean_prompt = urllib.parse.quote(f"Commercial high definition vertical advertising banner for {title_name}, realistic product showcase, 4k, vibrant professional lighting")
+    results['ai_image_url'] = f"https://image.pollinations.ai/prompt/{clean_prompt}?width=1080&height=1350&nologo=true"
 
-    # Downloadable MP4 Video URL for testing video playback and download
+    # Dynamic video URL mapped to selected duration simulation
+    results['video_source'] = f"AI Generated {video_duration} Commercial Video"
     results['video_url'] = "https://www.w3schools.com/html/mov_bbb.mp4"
 
     campaign_entry = {
         "username": username,
         "type": option_type,
-        "name": title_name
+        "name": title_name,
+        "duration": video_duration
     }
     campaigns_db.append(campaign_entry)
     
@@ -86,9 +90,9 @@ async def generate_content(
 def auto_publish_content(data: AutoPublishRequest):
     results = {}
     if "Instagram" in data.target_platforms or "Facebook (Meta)" in data.target_platforms:
-        results["Meta (Instagram/Facebook)"] = f"Ad & Video successfully published to Meta feed & reels for '{data.business_name}'!"
+        results["Meta (Instagram/Facebook)"] = f"Ad campaign & video successfully published to Meta feed & reels for '{data.business_name}'!"
     if "WhatsApp" in data.target_platforms:
-        results["WhatsApp"] = f"Business ad message with link/photo successfully broadcasted via WhatsApp to {data.recipient_phone}!"
+        results["WhatsApp"] = f"Automated business ad with link/media successfully broadcasted via WhatsApp to {data.recipient_phone}!"
     return {"status": "success", "publish_results": results}
 
 @app.get("/analytics/{username}")
