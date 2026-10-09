@@ -107,13 +107,14 @@ else:
                         st.markdown(f"[📥 Download Poster]({res_json['ai_image_url']})")
                         
                         st.subheader(f"🎬 AI Cinematic {selected_duration} Video (Play & Download):")
+                        # ప్యూర్ HTML5 వీడియో ప్లేయర్ (எర్రర్ రాకుండా ఉండేందుకు)
                         st.markdown(f'''
-                            <video width="100%" controls autoplay>
+                            <video width="100%" controls playsinline style="border-radius: 10px;">
                               <source src="{res_json["video_url"]}" type="video/mp4">
                               Your browser does not support the video tag.
                             </video>
                         ''', unsafe_allow_html=True)
-                        st.markdown(f"[📥 Download MP4 Video]({res_json['video_url']})")
+                        st.markdown(f"[📥 Download MP4 Video File]({res_json['video_url']})")
                         
                         st.subheader("📌 Marketing Caption")
                         st.write(res_json["content"])
@@ -164,12 +165,12 @@ else:
                         
                         st.subheader(f"🎬 AI Ad Video ({selected_duration}):")
                         st.markdown(f'''
-                            <video width="100%" controls autoplay>
+                            <video width="100%" controls playsinline style="border-radius: 10px;">
                               <source src="{res_json["video_url"]}" type="video/mp4">
                               Your browser does not support the video tag.
                             </video>
                         ''', unsafe_allow_html=True)
-                        st.markdown(f"[📥 Download MP4 Video]({res_json['video_url']})")
+                        st.markdown(f"[📥 Download MP4 Video File]({res_json['video_url']})")
                         
                         st.subheader("📌 Ad Copy")
                         st.write(res_json["content"])
@@ -205,12 +206,12 @@ else:
                         
                         st.subheader(f"🎥 Preview & Download {selected_duration} Video:")
                         st.markdown(f'''
-                            <video width="100%" controls autoplay>
+                            <video width="100%" controls playsinline style="border-radius: 10px;">
                               <source src="{res_json["video_url"]}" type="video/mp4">
                               Your browser does not support the video tag.
                             </video>
                         ''', unsafe_allow_html=True)
-                        st.markdown(f"[📥 Download MP4 Video]({res_json['video_url']})")
+                        st.markdown(f"[📥 Download MP4 Video File]({res_json['video_url']})")
                         
                         st.subheader("📝 Production Guide")
                         st.write(res_json["content"])
