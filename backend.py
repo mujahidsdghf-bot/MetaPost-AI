@@ -5,11 +5,11 @@ import requests
 import urllib.parse
 import os
 
-app = FastAPI(title="MetaPost AI Professional Video API", version="25.0")
+app = FastAPI(title="MetaPost AI Professional Video API", version="27.0")
 
 users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 2100, "earnings": 1550.00, "conversions": 310}
+analytics_data = {"clicks": 2200, "earnings": 1650.00, "conversions": 330}
 
 class UserRegister(BaseModel):
     username: str
@@ -66,9 +66,27 @@ async def generate_content(
     clean_banner_prompt = urllib.parse.quote(f"Cinematic professional commercial advertisement for {title_name}, 8k resolution, photorealistic studio lighting")
     results['ai_image_url'] = f"https://image.pollinations.ai/prompt/{clean_banner_prompt}?width=1080&height=1350&nologo=true"
 
-    # మొబైల్ బ్రౌజర్‌లో ఎటువంటి ఎర్రర్ రాకుండా సపోర్ట్ చేసే స్టెబుల్ MP4 లింక్
-    results['video_url'] = "https://www.w3schools.com/html/mov_bbb.mp4"
-    results['video_source'] = f"AI Professional Commercial Video for {title_name}"
+    # యూజర్ టైప్ చేసిన దాన్ని బట్టి ఏ కేటగిరీ అయినా మ్యాచ్ చేసే అడ్వాన్స్‌డ్ కీవర్డ్ చెకింగ్
+    t_lower = (title_name + " " + description_text).lower()
+    
+    if any(k in t_lower for k in ["tailor", "blouse", "sewing", "dress", "cloth", "fashion"]):
+        results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-tailor-working-with-a-sewing-machine-42999-large.mp4"
+        results['video_source'] = f"AI Fashion & Tailoring Video for {title_name}"
+    elif any(k in t_lower for k in ["food", "hotel", "biryani", "restaurant", "cooking", "millet", "organic", "kitchen"]):
+        results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-chef-cooking-in-a-kitchen-43285-large.mp4"
+        results['video_source'] = f"AI Food & Organic Video for {title_name}"
+    elif any(k in t_lower for k in ["jewelry", "jewellery", "gold", "silver", "ring", "necklace"]):
+        results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-hands-working-on-crafts-43283-large.mp4"
+        results['video_source'] = f"AI Jewelry & Craft Video for {title_name}"
+    elif any(k in t_lower for k in ["health", "healing", "ayurveda", "doctor", "hospital", "acupuncture"]):
+        results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-doctor-holding-a-stethoscope-42998-large.mp4"
+        results['video_source'] = f"AI Healthcare & Wellness Video for {title_name}"
+    elif any(k in t_lower for k in ["tech", "app", "mobile", "software", "code", "computer", "digital"]):
+        results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-a-green-screen-41584-large.mp4"
+        results['video_source'] = f"AI Tech & Digital Video for {title_name}"
+    else:
+        results['video_url'] = "https://www.w3schools.com/html/mov_bbb.mp4"
+        results['video_source'] = f"AI Professional Commercial Video for {title_name}"
 
     campaign_entry = {
         "username": username,
