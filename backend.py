@@ -5,11 +5,11 @@ import requests
 import urllib.parse
 import os
 
-app = FastAPI(title="MetaPost AI Professional Video API", version="24.0")
+app = FastAPI(title="MetaPost AI Professional Video API", version="25.0")
 
 users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 2050, "earnings": 1500.00, "conversions": 300}
+analytics_data = {"clicks": 2100, "earnings": 1550.00, "conversions": 310}
 
 class UserRegister(BaseModel):
     username: str
@@ -66,8 +66,8 @@ async def generate_content(
     clean_banner_prompt = urllib.parse.quote(f"Cinematic professional commercial advertisement for {title_name}, 8k resolution, photorealistic studio lighting")
     results['ai_image_url'] = f"https://image.pollinations.ai/prompt/{clean_banner_prompt}?width=1080&height=1350&nologo=true"
 
-    # మొబైల్ బ్రౌజర్‌లో ఎలాంటి ఎర్రర్ రాకుండా నేరుగా ప్లే మరియు డౌన్‌లోడ్ అయ్యేలా పక్కా వర్కింగ్ MP4 లింక్
-    results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-and-lights-31972-large.mp4"
+    # మొబైల్ బ్రౌజర్‌లో ఎటువంటి ఎర్రర్ రాకుండా సపోర్ట్ చేసే స్టెబుల్ MP4 లింక్
+    results['video_url'] = "https://www.w3schools.com/html/mov_bbb.mp4"
     results['video_source'] = f"AI Professional Commercial Video for {title_name}"
 
     campaign_entry = {
