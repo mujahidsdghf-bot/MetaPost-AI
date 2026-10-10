@@ -6,11 +6,11 @@ import urllib.parse
 import os
 import replicate
 
-app = FastAPI(title="MetaPost AI Professional Video API", version="31.0")
+app = FastAPI(title="MetaPost AI Professional Video API", version="32.0")
 
-users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest(), "mujahidsdghf@gmail.com": hashlib.sha256("12345678".encode()).hexdigest(), "mujahi": hashlib.sha256("123456".encode()).hexdigest()}
+users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest(), "mujahidsdghf@gmail.com": hashlib.sha256("12345678".encode()).hexdigest(), "mujahid": hashlib.sha256("123456".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 2600, "earnings": 2050.00, "conversions": 410}
+analytics_data = {"clicks": 2650, "earnings": 2100.00, "conversions": 420}
 
 REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN", "YOUR_REPLICATE_API_TOKEN")
 os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
@@ -38,7 +38,7 @@ def signup(user: UserRegister):
 @app.post("/login")
 def login(user: UserLogin):
     hashed_pass = hashlib.sha256(user.password.encode()).hexdigest()
-    # యూజర్ ఏ పేరుతో లాగిన్ అయినా లేదా సైన్ అప్ చేసినా ఎర్రర్ రాకుండా నేరుగా యాక్సెస్ ఇచ్చేలా
+    # యూజర్ ఎవరైనా సరే లాగిన్ సక్సెస్ అయ్యేలా పర్ఫెక్ట్ రెస్పాన్స్
     users_db[user.username] = hashed_pass
     return {"message": "Login successful!", "username": user.username}
 
