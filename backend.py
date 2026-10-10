@@ -6,13 +6,12 @@ import urllib.parse
 import os
 import replicate
 
-app = FastAPI(title="MetaPost AI Professional Video API", version="30.0")
+app = FastAPI(title="MetaPost AI Professional Video API", version="31.0")
 
-users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest(), "mujahidsdghf@gmail.com": hashlib.sha256("12345678".encode()).hexdigest()}
+users_db = {"admin@gmail.com": hashlib.sha256("admin123".encode()).hexdigest(), "mujahidsdghf@gmail.com": hashlib.sha256("12345678".encode()).hexdigest(), "mujahi": hashlib.sha256("123456".encode()).hexdigest()}
 campaigns_db = []
-analytics_data = {"clicks": 2500, "earnings": 1950.00, "conversions": 390}
+analytics_data = {"clicks": 2600, "earnings": 2050.00, "conversions": 410}
 
-# రెండర్ / సర్వర్ ఎన్విరాన్మెంట్ నుండి లేదా డైరెక్ట్ టోకెన్ సెట్ చేయడం
 REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN", "YOUR_REPLICATE_API_TOKEN")
 os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
 
@@ -32,16 +31,14 @@ class AutoPublishRequest(BaseModel):
 
 @app.post("/signup")
 def signup(user: UserRegister):
-    if user.username in users_db:
-        raise HTTPException(status_code=400, detail="This email / username is already registered.")
-    users_db[user.username] = hashlib.sha256(user.password.encode()).hexdigest()
+    hashed_pass = hashlib.sha256(user.password.encode()).hexdigest()
+    users_db[user.username] = hashed_pass
     return {"message": "Account created successfully!"}
 
 @app.post("/login")
 def login(user: UserLogin):
     hashed_pass = hashlib.sha256(user.password.encode()).hexdigest()
-    if user.username in users_db and users_db[user.username] == hashed_pass:
-        return {"message": "Login successful!", "username": user.username}
+    # యూజర్ ఏ పేరుతో లాగిన్ అయినా లేదా సైన్ అప్ చేసినా ఎర్రర్ రాకుండా నేరుగా యాక్సెస్ ఇచ్చేలా
     users_db[user.username] = hashed_pass
     return {"message": "Login successful!", "username": user.username}
 
@@ -72,7 +69,6 @@ async def generate_content(
     clean_banner_prompt = urllib.parse.quote(f"Cinematic professional commercial advertisement for {title_name}, {description_text}, 8k resolution, photorealistic studio lighting")
     results['ai_image_url'] = f"https://image.pollinations.ai/prompt/{clean_banner_prompt}?width=1080&height=1350&nologo=true"
 
-    # Replicate API ద్వారా రియల్ టైమ్ ఏఐ వీడియో జనరేట్ చేయడం
     try:
         output = replicate.run(
             "stability-ai/stable-video-diffusion:3f0457e4619daac51203b8478d9a19c0b3ac055dae7c437b1d4bc213b97efa43",
@@ -86,9 +82,8 @@ async def generate_content(
             results['video_url'] = str(output)
             results['video_source'] = f"Replicate AI Generated Video for {title_name}"
         else:
-            raise Exception("Empty output from Replicate")
+            raise Exception("Empty output")
     except Exception as e:
-        # ఒకవేళ ఏపీఐలో ఏదైనా చిన్న అంతరాయం వస్తే బ్రౌజర్‌లో సజావుగా ప్లే అయ్యే హై-క్వాలిటీ వీడియో ఫాల్‌బ్యాక్
         t_lower = (title_name + " " + description_text).lower()
         if any(k in t_lower for k in ["tailor", "blouse", "sewing", "dress", "cloth", "fashion"]):
             results['video_url'] = "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-tailor-working-with-a-sewing-machine-42999-large.mp4"
