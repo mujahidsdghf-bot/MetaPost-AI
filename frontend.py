@@ -107,7 +107,6 @@ else:
                         st.markdown(f"[📥 Download Poster]({res_json['ai_image_url']})")
                         
                         st.subheader(f"🎬 AI Cinematic {selected_duration} Video (Play & Download):")
-                        # ప్యూర్ HTML5 వీడియో ప్లేయర్ (எర్రర్ రాకుండా ఉండేందుకు)
                         st.markdown(f'''
                             <video width="100%" controls playsinline style="border-radius: 10px;">
                               <source src="{res_json["video_url"]}" type="video/mp4">
@@ -129,22 +128,10 @@ else:
             b_desc = st.text_area("Service Description:")
             b_link = st.text_input("Website Link:")
             
-            col1, col2 = st.columns(2)
-            with col1:
-                up_img = st.file_uploader("Upload Logo/Photo:", type=["jpg", "png", "jpeg"])
-            with col2:
-                up_vid = st.file_uploader("Upload Source Video:", type=["mp4", "mov"])
-                
             submitted = st.form_submit_button("Generate Business AI Ad")
             
             if submitted:
                 if b_name:
-                    files = {}
-                    if up_img:
-                        files["image"] = (up_img.name, up_img.getvalue(), up_img.type)
-                    if up_vid:
-                        files["video"] = (up_vid.name, up_vid.getvalue(), up_vid.type)
-                        
                     data = {
                         "username": st.session_state['username'],
                         "option_type": "Business & Auto Ads",
@@ -154,7 +141,7 @@ else:
                         "language": selected_lang,
                         "video_duration": selected_duration
                     }
-                    res = requests.post(f"{BACKEND_URL}/generate-content", data=data, files=files if files else None)
+                    res = requests.post(f"{BACKEND_URL}/generate-content", data=data)
                     if res.status_code == 200:
                         res_json = res.json()["generated_content"]
                         st.success("Business AI Ad Generated!")
@@ -236,15 +223,14 @@ else:
                         "target_platforms": platforms,
                         "recipient_phone": phone
                     }
-                    with st.spinner("Publishing..."):
-                        res = requests.post(f"{BACKEND_URL}/auto-publish", json=payload)
-                        if res.status_code == 200:
-                            res_data = res.json().get("publish_results", {})
-                            st.success("Published successfully!")
-                            for plat, msg in res_data.items():
-                                st.info(f"**{plat}:** {msg}")
-                        else:
-                            st.error("Publishing failed.")
+                    res = requests.post(f"{BACKEND_URL}/auto-publish", json=payload)
+                    if res.status_code == 200:
+                        res_data = res.json().get("publish_results", {})
+                        st.success("Published successfully!")
+                        for plat, msg in res_data.items():
+                            st.info(f"**{plat}:** {msg}")
+                    else:
+                        st.error("Publishing failed.")
                 else:
                     st.warning("Please fill in all required fields.")
 
